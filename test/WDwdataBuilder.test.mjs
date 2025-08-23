@@ -135,10 +135,10 @@ describe('WDwdataBuilder', function() {
             delete msg.timeRunStart
             delete msg.timeRunEnd
             delete msg.timeRunSpent
-            console.log('change', msg)
+            // console.log('change', msg)
             ms.push(msg)
             if (msg.event === 'end') {
-                console.log('ms', ms)
+                // console.log('ms', ms)
                 pm.resolve(ms)
             }
         })
