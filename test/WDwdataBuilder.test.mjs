@@ -5,7 +5,7 @@ import assert from 'assert'
 import WDwdataBuilder from '../src/WDwdataBuilder.mjs'
 
 
-describe('all', function() {
+describe('WDwdataBuilder', function() {
 
     let test = async() => {
 
