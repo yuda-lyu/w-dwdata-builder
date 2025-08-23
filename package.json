@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "dist/w-dwdata-builder.umd.js",
   "dependencies": {
-    "axios": "^1.11.0",
     "lodash-es": "^4.17.21",
     "w-syslog": "^1.0.6",
     "wsemi": "^1.8.18"
