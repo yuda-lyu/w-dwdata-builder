@@ -29,7 +29,7 @@ describe('WDwdataBuilder', function() {
         let funDownload = async() => {
 
             //reverse
-            let eqs = [
+            let items = [
                 {
                     'id': '114116',
                     'tag': '2025082214061554116',
@@ -50,7 +50,7 @@ describe('WDwdataBuilder', function() {
                 },
             ]
 
-            _.each(eqs, (v) => {
+            _.each(items, (v) => {
 
                 let fp = `${fdDwAttime}/${v.id}.json`
 
@@ -58,7 +58,7 @@ describe('WDwdataBuilder', function() {
 
             })
 
-            return eqs
+            return items
         }
 
         //funGetCurrent
@@ -68,18 +68,18 @@ describe('WDwdataBuilder', function() {
             let vfps = w.fsTreeFolder(fdDwCurrent, 1)
             // console.log('vfps', vfps)
 
-            //eqs
-            let eqs = []
+            //items
+            let items = []
             _.each(vfps, (v) => {
 
                 let j = fs.readFileSync(v.path, 'utf8')
-                let eq = JSON.parse(j)
+                let item = JSON.parse(j)
 
-                eqs.push(eq)
+                items.push(item)
 
             })
 
-            return eqs
+            return items
         }
 
         //funRemove

@@ -51,7 +51,7 @@ import _srlog from './srlog.mjs'
  * let funDownload = async() => {
  *
  *     //reverse
- *     let eqs = [
+ *     let items = [
  *         {
  *             'id': '114116',
  *             'tag': '2025082214061554116',
@@ -72,7 +72,7 @@ import _srlog from './srlog.mjs'
  *         },
  *     ]
  *
- *     _.each(eqs, (v) => {
+ *     _.each(items, (v) => {
  *
  *         let fp = `${fdDwAttime}/${v.id}.json`
  *
@@ -80,7 +80,7 @@ import _srlog from './srlog.mjs'
  *
  *     })
  *
- *     return eqs
+ *     return items
  * }
  *
  * //funGetCurrent
@@ -90,18 +90,18 @@ import _srlog from './srlog.mjs'
  *     let vfps = w.fsTreeFolder(fdDwCurrent, 1)
  *     // console.log('vfps', vfps)
  *
- *     //eqs
- *     let eqs = []
+ *     //items
+ *     let items = []
  *     _.each(vfps, (v) => {
  *
  *         let j = fs.readFileSync(v.path, 'utf8')
- *         let eq = JSON.parse(j)
+ *         let item = JSON.parse(j)
  *
- *         eqs.push(eq)
+ *         items.push(item)
  *
  *     })
  *
- *     return eqs
+ *     return items
  * }
  *
  * //funRemove
@@ -314,8 +314,8 @@ let WDwdataBuilder = async(opt = {}) => {
         //     // console.log(`src send task...`, msg)
         // })
 
-        //eqsAtt
-        let eqsAtt = []
+        //itemsAtt
+        let itemsAtt = []
         if (true) {
             try {
 
@@ -328,7 +328,7 @@ let WDwdataBuilder = async(opt = {}) => {
                 srlog.info({ event: 'proc-callfun-download', msg: 'done' })
 
                 //save
-                eqsAtt = q
+                itemsAtt = q
 
             }
             catch (err) {
@@ -345,8 +345,8 @@ let WDwdataBuilder = async(opt = {}) => {
             return
         }
 
-        //eqsCur
-        let eqsCur = []
+        //itemsCur
+        let itemsCur = []
         if (true) {
             try {
 
@@ -359,7 +359,7 @@ let WDwdataBuilder = async(opt = {}) => {
                 srlog.info({ event: 'proc-callfun-getCurrent', msg: 'done' })
 
                 //save
-                eqsCur = q
+                itemsCur = q
 
             }
             catch (err) {
@@ -377,15 +377,15 @@ let WDwdataBuilder = async(opt = {}) => {
         }
 
         //check
-        if (size(eqsAtt) === 0) {
+        if (size(itemsAtt) === 0) {
             console.log(`invalid data, task canceled`) //無法取得有效數據, 不進行後續動作
             srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'can not download data' })
             return
         }
 
         //check
-        if (size(eqsCur) - size(eqsAtt) > 10) {
-            console.log(`difference between the data before and after is too large, size(eqsCur)[${size(eqsCur)}]-size(eqsAtt)[${size(eqsAtt)}]>10`) //當前取得數據與已儲存數據之數量差距超過10, 不進行後續動作, 當前取得數據筆數[${size(eqsAtt)}], 已儲存數據筆數[${size(eqsCur)}]
+        if (size(itemsCur) - size(itemsAtt) > 10) {
+            console.log(`difference between the data before and after is too large, size(itemsCur)[${size(itemsCur)}]-size(itemsAtt)[${size(itemsAtt)}]>10`) //當前取得數據與已儲存數據之數量差距超過10, 不進行後續動作, 當前取得數據筆數[${size(itemsAtt)}], 已儲存數據筆數[${size(itemsCur)}]
             srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'difference between the data before and after is too large' })
             return
         }
@@ -396,8 +396,8 @@ let WDwdataBuilder = async(opt = {}) => {
             try {
 
                 srlog.info({ event: 'compare', msg: 'start...' })
-                let ltdtSrc = eqsAtt
-                let ltdtTar = eqsCur
+                let ltdtSrc = itemsAtt
+                let ltdtTar = itemsCur
                 r = ltdtDiffByKey(ltdtTar, ltdtSrc, keyId, { withInfor: false })
                 // console.log('ltdtDiffByKey', r)
                 //   del: [ {...} ],
