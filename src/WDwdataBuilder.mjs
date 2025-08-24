@@ -442,7 +442,7 @@ let WDwdataBuilder = async(opt = {}) => {
                 if (ispm(q)) {
                     q = await q
                 }
-            // srlog.info({ event: 'proc-remove-callfun-remove', [keyId]: v[keyId], msg: 'done' })
+                // srlog.info({ event: 'proc-remove-callfun-remove', [keyId]: v[keyId], msg: 'done' })
             }
             catch (err) {
                 console.log(err)
@@ -490,7 +490,7 @@ let WDwdataBuilder = async(opt = {}) => {
                 if (ispm(q)) {
                     q = await q
                 }
-            // srlog.info({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: 'done' })
+                // srlog.info({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: 'done' })
             }
             catch (err) {
                 console.log(err)
@@ -539,7 +539,7 @@ let WDwdataBuilder = async(opt = {}) => {
                 if (ispm(q)) {
                     q = await q
                 }
-            // srlog.info({ event: 'proc-diff-callfun-modify', [keyId]: v[keyId], msg: 'done' })
+                // srlog.info({ event: 'proc-diff-callfun-modify', [keyId]: v[keyId], msg: 'done' })
             }
             catch (err) {
                 console.log(err)
