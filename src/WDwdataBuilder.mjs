@@ -609,6 +609,9 @@ let WDwdataBuilder = async(opt = {}) => {
             srlog.error({ event: 'proc-core', msg: err.message })
         })
 
+    //save
+    ev.srlog = srlog
+
     return ev
 }
 
