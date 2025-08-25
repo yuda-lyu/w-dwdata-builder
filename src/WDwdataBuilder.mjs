@@ -9,6 +9,7 @@ import ltdtDiffByKey from 'wsemi/src/ltdtDiffByKey.mjs'
 import evem from 'wsemi/src/evem.mjs'
 import pmSeries from 'wsemi/src/pmSeries.mjs'
 import delay from 'wsemi/src/delay.mjs'
+import getErrorMessage from 'wsemi/src/getErrorMessage.mjs'
 import fsIsFolder from 'wsemi/src/fsIsFolder.mjs'
 import fsCleanFolder from 'wsemi/src/fsCleanFolder.mjs'
 import fsCreateFolder from 'wsemi/src/fsCreateFolder.mjs'
@@ -333,7 +334,7 @@ let WDwdataBuilder = async(opt = {}) => {
             }
             catch (err) {
                 console.log(err)
-                srlog.error({ event: 'proc-callfun-download', msg: err.message })
+                srlog.error({ event: 'proc-callfun-download', msg: getErrorMessage(err) })
                 msgExit = 'error at proc-callfun-download'
             }
         }
@@ -364,7 +365,7 @@ let WDwdataBuilder = async(opt = {}) => {
             }
             catch (err) {
                 console.log(err)
-                srlog.error({ event: 'proc-callfun-getCurrent', msg: err.message })
+                srlog.error({ event: 'proc-callfun-getCurrent', msg: getErrorMessage(err) })
                 msgExit = 'error at proc-callfun-getCurrent'
             }
         }
@@ -409,7 +410,7 @@ let WDwdataBuilder = async(opt = {}) => {
             }
             catch (err) {
                 console.log(err)
-                srlog.error({ event: 'compare', msg: err.message })
+                srlog.error({ event: 'compare', msg: getErrorMessage(err) })
             }
         }
 
@@ -446,7 +447,7 @@ let WDwdataBuilder = async(opt = {}) => {
             }
             catch (err) {
                 console.log(err)
-                srlog.error({ event: 'proc-remove-callfun-remove', [keyId]: v[keyId], msg: err.message })
+                srlog.error({ event: 'proc-remove-callfun-remove', [keyId]: v[keyId], msg: getErrorMessage(err) })
                 msgExit = 'error at proc-remove-callfun-remove'
             }
 
@@ -462,7 +463,7 @@ let WDwdataBuilder = async(opt = {}) => {
             }
             catch (err) {
                 console.log(err)
-                srlog.error({ event: 'proc-remove-otk-remove', [keyId]: v[keyId], msg: err.message })
+                srlog.error({ event: 'proc-remove-otk-remove', [keyId]: v[keyId], msg: getErrorMessage(err) })
                 msgExit = 'error at proc-remove-otk-remove'
             }
 
@@ -494,7 +495,7 @@ let WDwdataBuilder = async(opt = {}) => {
             }
             catch (err) {
                 console.log(err)
-                srlog.error({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: err.message })
+                srlog.error({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: getErrorMessage(err) })
                 msgExit = 'error at proc-add-callfun-add'
             }
 
@@ -511,7 +512,7 @@ let WDwdataBuilder = async(opt = {}) => {
             }
             catch (err) {
                 console.log(err)
-                srlog.error({ event: 'proc-add-otk-set', [keyId]: v[keyId], msg: err.message })
+                srlog.error({ event: 'proc-add-otk-set', [keyId]: v[keyId], msg: getErrorMessage(err) })
                 msgExit = 'error at proc-add-otk-set'
             }
 
@@ -543,7 +544,7 @@ let WDwdataBuilder = async(opt = {}) => {
             }
             catch (err) {
                 console.log(err)
-                srlog.error({ event: 'proc-diff-callfun-modify', [keyId]: v[keyId], msg: err.message })
+                srlog.error({ event: 'proc-diff-callfun-modify', [keyId]: v[keyId], msg: getErrorMessage(err) })
                 msgExit = 'error at proc-diff-callfun-modify'
             }
 
@@ -560,7 +561,7 @@ let WDwdataBuilder = async(opt = {}) => {
             }
             catch (err) {
                 console.log(err)
-                srlog.error({ event: 'proc-diff-otk-set', [keyId]: v[keyId], msg: err.message })
+                srlog.error({ event: 'proc-diff-otk-set', [keyId]: v[keyId], msg: getErrorMessage(err) })
                 msgExit = 'error at proc-diff-otk-set'
             }
 
@@ -606,7 +607,7 @@ let WDwdataBuilder = async(opt = {}) => {
     core()
         .catch((err) => {
             console.log(err)
-            srlog.error({ event: 'proc-core', msg: err.message })
+            srlog.error({ event: 'proc-core', msg: getErrorMessage(err) })
         })
 
     //save

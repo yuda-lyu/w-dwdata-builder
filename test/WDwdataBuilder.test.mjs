@@ -171,10 +171,10 @@ describe('WDwdataBuilder', function() {
         { event: 'proc-callfun-getCurrent', msg: 'done' },
         { event: 'compare', msg: 'start...' },
         { event: 'compare', msg: 'done' },
-        { event: 'proc-add-callfun-add', id: '114116', msg: 'start...' },
-        { event: 'proc-add-callfun-add', id: '114116', msg: 'done' },
         { event: 'proc-add-callfun-add', id: '114115', msg: 'start...' },
         { event: 'proc-add-callfun-add', id: '114115', msg: 'done' },
+        { event: 'proc-add-callfun-add', id: '114116', msg: 'start...' },
+        { event: 'proc-add-callfun-add', id: '114116', msg: 'done' },
         { event: 'end', msg: 'done' }
     ]
 

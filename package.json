@@ -1,11 +1,11 @@
 {
   "name": "w-dwdata-builder",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "dist/w-dwdata-builder.umd.js",
   "dependencies": {
     "lodash-es": "^4.17.21",
     "w-syslog": "^1.0.6",
-    "wsemi": "^1.8.18"
+    "wsemi": "^1.8.19"
   },
   "devDependencies": {
     "w-package-tools": "^1.1.2"
