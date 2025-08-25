@@ -1,6 +1,6 @@
 {
   "name": "w-dwdata-builder",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "main": "dist/w-dwdata-builder.umd.js",
   "dependencies": {
     "lodash-es": "^4.17.21",
