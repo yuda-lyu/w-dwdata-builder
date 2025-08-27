@@ -396,16 +396,16 @@ let WDwdataBuilder = async(opt = {}) => {
         //check
         if (size(itemsAtt) === 0) {
             console.log(`invalid data, task canceled`) //無法取得有效數據, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'can not download data' })
+            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'no data' })
             return
         }
 
-        //check
-        if (size(itemsCur) - size(itemsAtt) > 10) {
-            console.log(`difference between the data before and after is too large, size(itemsCur)[${size(itemsCur)}]-size(itemsAtt)[${size(itemsAtt)}]>10`) //當前取得數據與已儲存數據之數量差距超過10, 不進行後續動作, 當前取得數據筆數[${size(itemsAtt)}], 已儲存數據筆數[${size(itemsCur)}]
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'difference between the data before and after is too large' })
-            return
-        }
+        // //check
+        // if (size(itemsCur) - size(itemsAtt) > 10) {
+        //     console.log(`difference between the data before and after is too large, size(itemsCur)[${size(itemsCur)}]-size(itemsAtt)[${size(itemsAtt)}]>10`) //當前取得數據與已儲存數據之數量差距超過10, 不進行後續動作, 當前取得數據筆數[${size(itemsAtt)}], 已儲存數據筆數[${size(itemsCur)}]
+        //     srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'difference between the data before and after is too large' })
+        //     return
+        // }
 
         //ltdtDiffByKey
         let r = null
