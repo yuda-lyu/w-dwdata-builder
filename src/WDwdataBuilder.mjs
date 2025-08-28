@@ -342,7 +342,7 @@ let WDwdataBuilder = async(opt = {}) => {
                 if (ispm(q)) {
                     q = await q
                 }
-                srlog.info({ event: 'proc-callfun-download', msg: 'done' })
+                srlog.info({ event: 'proc-callfun-download', num: size(q), msg: 'done' })
 
                 //save
                 itemsAtt = q
@@ -373,7 +373,7 @@ let WDwdataBuilder = async(opt = {}) => {
                 if (ispm(q)) {
                     q = await q
                 }
-                srlog.info({ event: 'proc-callfun-getCurrent', msg: 'done' })
+                srlog.info({ event: 'proc-callfun-getCurrent', num: size(q), msg: 'done' })
 
                 //save
                 itemsCur = q
