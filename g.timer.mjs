@@ -16,10 +16,6 @@ w.fsCleanFolder(fdDwCurrent)
 let fdResult = './_result'
 w.fsCleanFolder(fdResult)
 
-//fdTagModify
-let fdTagModify = './_tagModify'
-w.fsCleanFolder(fdTagModify)
-
 //fdTagRemove
 let fdTagRemove = './_tagRemove'
 w.fsCleanFolder(fdTagRemove)
@@ -281,6 +277,12 @@ let run = async() => {
     }
 
     let opt = {
+        fdDwAttime,
+        fdDwCurrent,
+        fdResult,
+        fdTagRemove,
+        fdTaskCpActualSrc,
+        fdTaskCpSrc,
         funDownload,
         funGetCurrent,
         funRemove,

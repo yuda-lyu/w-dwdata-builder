@@ -111,6 +111,12 @@ let funModify = async(v) => {
 }
 
 let opt = {
+    fdDwAttime,
+    fdDwCurrent,
+    fdResult,
+    // fdTagRemove,
+    // fdTaskCpActualSrc,
+    // fdTaskCpSrc,
     funDownload,
     funGetCurrent,
     funRemove,
