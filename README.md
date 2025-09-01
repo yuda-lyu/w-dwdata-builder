@@ -148,20 +148,14 @@ ev.on('change', (msg) => {
 })
 // change { event: 'start', msg: 'running...' }
 // change { event: 'proc-callfun-download', msg: 'start...' }
-// change { event: 'proc-callfun-download', msg: 'done' }
+// change { event: 'proc-callfun-download', num: 2, msg: 'done' }
 // change { event: 'proc-callfun-getCurrent', msg: 'start...' }
-// change { event: 'proc-callfun-getCurrent', msg: 'done' }
+// change { event: 'proc-callfun-getCurrent', num: 0, msg: 'done' }
 // change { event: 'compare', msg: 'start...' }
 // change { event: 'compare', msg: 'done' }
 // change { event: 'proc-add-callfun-add', id: '114116', msg: 'start...' }
 // change { event: 'proc-add-callfun-add', id: '114116', msg: 'done' }
 // change { event: 'proc-add-callfun-add', id: '114115', msg: 'start...' }
 // change { event: 'proc-add-callfun-add', id: '114115', msg: 'done' }
-// change {
-//   event: 'end',
-//   timeRunStart: '2025-08-23T15:47:24+08:00',
-//   timeRunEnd: '2025-08-23T15:47:24+08:00',
-//   timeRunSpent: '0s',
-//   msg: 'done'
-// }
+// change { event: 'end', msg: 'done' }
 ```
