@@ -221,11 +221,11 @@ let WDwdataBuilder = async(opt = {}) => {
     // //     fsCreateFolder(fdTagAdd)
     // // }
 
-    //fdTagModify
-    let fdTagModify = get(opt, 'fdTagModify')
-    if (!isestr(fdTagModify)) {
-        fdTagModify = './_tagModify'
-    }
+    // //fdTagModify
+    // let fdTagModify = get(opt, 'fdTagModify')
+    // if (!isestr(fdTagModify)) {
+    //     fdTagModify = './_tagModify'
+    // }
 
     //fdTagRemove
     let fdTagRemove = get(opt, 'fdTagRemove')
@@ -1026,11 +1026,14 @@ let WDwdataBuilder = async(opt = {}) => {
         //vfpsRemove
         let vfpsRemove = fsTreeFolder(fdTagRemove, 1)
 
-        //vfpsModify
-        let vfpsModify = fsTreeFolder(fdTagModify, 1)
+        // //vfpsModify
+        // let vfpsModify = fsTreeFolder(fdTagModify, 1)
 
         //check
-        if (size(vfpsRemove) === 0 && size(vfpsModify) === 0) {
+        // if (size(vfpsRemove) === 0 && size(vfpsModify) === 0) {
+        //     return
+        // }
+        if (size(vfpsRemove) === 0) {
             return
         }
 
