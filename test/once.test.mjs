@@ -5,7 +5,7 @@ import assert from 'assert'
 import WDwdataBuilder from '../src/WDwdataBuilder.mjs'
 
 
-describe('WDwdataBuilder', function() {
+describe('once', function() {
 
     let test = async() => {
 
@@ -14,21 +14,21 @@ describe('WDwdataBuilder', function() {
         let ms = []
 
         //fdDwAttime
-        let fdDwAttime = `./_dwAttime`
+        let fdDwAttime = `./_once_dwAttime`
         w.fsCleanFolder(fdDwAttime)
 
         //fdDwCurrent
-        let fdDwCurrent = `./_dwCurrent`
+        let fdDwCurrent = `./_once_dwCurrent`
         w.fsCleanFolder(fdDwCurrent)
 
         //fdResult
-        let fdResult = './_result'
+        let fdResult = './_once_result'
         w.fsCleanFolder(fdResult)
 
         //funDownload
         let funDownload = async() => {
 
-            //reverse
+            //items
             let items = [
                 {
                     'id': '114115',
@@ -120,6 +120,13 @@ describe('WDwdataBuilder', function() {
         }
 
         let opt = {
+            fdDwAttime,
+            fdDwCurrent,
+            fdResult,
+            // fdTagModify,
+            // fdTagRemove,
+            // fdTaskCpActualSrc,
+            // fdTaskCpSrc,
             funDownload,
             funGetCurrent,
             funRemove,
@@ -139,14 +146,19 @@ describe('WDwdataBuilder', function() {
             ms.push(msg)
             if (msg.event === 'end') {
                 // console.log('ms', ms)
+
+                w.fsDeleteFolder(fdDwAttime)
+                w.fsDeleteFolder(fdDwCurrent)
+                w.fsDeleteFolder(fdResult)
+
                 pm.resolve(ms)
             }
         })
         // change { event: 'start', msg: 'running...' }
         // change { event: 'proc-callfun-download', msg: 'start...' }
-        // change { event: 'proc-callfun-download', msg: 'done' }
+        // change { event: 'proc-callfun-download', num: 2, msg: 'done' }
         // change { event: 'proc-callfun-getCurrent', msg: 'start...' }
-        // change { event: 'proc-callfun-getCurrent', msg: 'done' }
+        // change { event: 'proc-callfun-getCurrent', num: 0, msg: 'done' }
         // change { event: 'compare', msg: 'start...' }
         // change { event: 'compare', msg: 'done' }
         // change { event: 'proc-add-callfun-add', id: '114116', msg: 'start...' }
@@ -166,9 +178,9 @@ describe('WDwdataBuilder', function() {
     let ms = [
         { event: 'start', msg: 'running...' },
         { event: 'proc-callfun-download', msg: 'start...' },
-        { event: 'proc-callfun-download', msg: 'done' },
+        { event: 'proc-callfun-download', num: 2, msg: 'done' },
         { event: 'proc-callfun-getCurrent', msg: 'start...' },
-        { event: 'proc-callfun-getCurrent', msg: 'done' },
+        { event: 'proc-callfun-getCurrent', num: 0, msg: 'done' },
         { event: 'compare', msg: 'start...' },
         { event: 'compare', msg: 'done' },
         { event: 'proc-add-callfun-add', id: '114115', msg: 'start...' },

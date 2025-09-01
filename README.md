@@ -40,7 +40,7 @@ w.fsCleanFolder(fdResult)
 //funDownload
 let funDownload = async() => {
 
-    //reverse
+    //items
     let items = [
         {
             'id': '114115',

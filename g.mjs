@@ -19,7 +19,7 @@ w.fsCleanFolder(fdResult)
 //funDownload
 let funDownload = async() => {
 
-    //reverse
+    //items
     let items = [
         {
             'id': '114115',
@@ -123,25 +123,23 @@ let ev = await WDwdataBuilder(opt)
     })
 ev.on('change', (msg) => {
     delete msg.type
+    delete msg.timeRunStart
+    delete msg.timeRunEnd
+    delete msg.timeRunSpent
     console.log('change', msg)
 })
 // change { event: 'start', msg: 'running...' }
 // change { event: 'proc-callfun-download', msg: 'start...' }
-// change { event: 'proc-callfun-download', msg: 'done' }
+// change { event: 'proc-callfun-download', num: 2, msg: 'done' }
 // change { event: 'proc-callfun-getCurrent', msg: 'start...' }
-// change { event: 'proc-callfun-getCurrent', msg: 'done' }
+// change { event: 'proc-callfun-getCurrent', num: 0, msg: 'done' }
 // change { event: 'compare', msg: 'start...' }
 // change { event: 'compare', msg: 'done' }
 // change { event: 'proc-add-callfun-add', id: '114116', msg: 'start...' }
 // change { event: 'proc-add-callfun-add', id: '114116', msg: 'done' }
 // change { event: 'proc-add-callfun-add', id: '114115', msg: 'start...' }
 // change { event: 'proc-add-callfun-add', id: '114115', msg: 'done' }
-// change {
-//   event: 'end',
-//   timeRunStart: '2025-08-23T15:47:24+08:00',
-//   timeRunEnd: '2025-08-23T15:47:24+08:00',
-//   timeRunSpent: '0s',
-//   msg: 'done'
-// }
+// change { event: 'end', msg: 'done' }
+
 
 //node g.mjs
