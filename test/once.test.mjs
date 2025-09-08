@@ -25,6 +25,18 @@ describe('once', function() {
         let fdResult = './_once_result'
         w.fsCleanFolder(fdResult)
 
+        //fdTagRemove
+        let fdTagRemove = './_once_tagRemove'
+        w.fsCleanFolder(fdTagRemove)
+
+        //fdTaskCpActualSrc
+        let fdTaskCpActualSrc = './_once_taskCpActualSrc'
+        w.fsCleanFolder(fdTaskCpActualSrc)
+
+        //fdTaskCpSrc
+        let fdTaskCpSrc = './_once_taskCpSrc'
+        w.fsCleanFolder(fdTaskCpSrc)
+
         //funDownload
         let funDownload = async() => {
 
@@ -123,10 +135,9 @@ describe('once', function() {
             fdDwAttime,
             fdDwCurrent,
             fdResult,
-            // fdTagModify,
-            // fdTagRemove,
-            // fdTaskCpActualSrc,
-            // fdTaskCpSrc,
+            fdTagRemove,
+            fdTaskCpActualSrc,
+            fdTaskCpSrc,
             funDownload,
             funGetCurrent,
             funRemove,
@@ -144,15 +155,13 @@ describe('once', function() {
             delete msg.timeRunSpent
             // console.log('change', msg)
             ms.push(msg)
-            if (msg.event === 'end') {
-                // console.log('ms', ms)
-
-                w.fsDeleteFolder(fdDwAttime)
-                w.fsDeleteFolder(fdDwCurrent)
-                w.fsDeleteFolder(fdResult)
-
-                pm.resolve(ms)
-            }
+        })
+        ev.on('end', (msg) => {
+            // console.log('ms', ms)
+            w.fsDeleteFolder(fdDwAttime)
+            w.fsDeleteFolder(fdDwCurrent)
+            w.fsDeleteFolder(fdResult)
+            pm.resolve(ms)
         })
         // change { event: 'start', msg: 'running...' }
         // change { event: 'proc-callfun-download', msg: 'start...' }
@@ -187,6 +196,8 @@ describe('once', function() {
         { event: 'proc-add-callfun-add', id: '114115', msg: 'done' },
         { event: 'proc-add-callfun-add', id: '114116', msg: 'start...' },
         { event: 'proc-add-callfun-add', id: '114116', msg: 'done' },
+        { event: 'proc-callfun-beforeEnd', msg: 'start...' },
+        { event: 'proc-callfun-beforeEnd', msg: 'done' },
         { event: 'end', msg: 'done' }
     ]
 

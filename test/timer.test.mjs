@@ -25,10 +25,6 @@ describe('timer', function() {
         let fdResult = './_timer_result'
         w.fsCleanFolder(fdResult)
 
-        //fdTagModify
-        let fdTagModify = './_timer_tagModify'
-        w.fsCleanFolder(fdTagModify)
-
         //fdTagRemove
         let fdTagRemove = './_timer_tagRemove'
         w.fsCleanFolder(fdTagRemove)
@@ -293,7 +289,6 @@ describe('timer', function() {
                 fdDwAttime,
                 fdDwCurrent,
                 fdResult,
-                fdTagModify,
                 fdTagRemove,
                 fdTaskCpActualSrc,
                 fdTaskCpSrc,
@@ -364,7 +359,6 @@ describe('timer', function() {
                 w.fsDeleteFolder(fdDwAttime)
                 w.fsDeleteFolder(fdDwCurrent)
                 w.fsDeleteFolder(fdResult)
-                w.fsDeleteFolder(fdTagModify)
                 w.fsDeleteFolder(fdTagRemove)
                 w.fsDeleteFolder(fdTaskCpActualSrc)
                 w.fsDeleteFolder(fdTaskCpSrc)
@@ -389,6 +383,8 @@ describe('timer', function() {
             id: '114115',
             msg: 'done'
         },
+        { stage: '1.ini', event: 'proc-callfun-beforeEnd', msg: 'start...' },
+        { stage: '1.ini', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '1.ini', event: 'end', msg: 'done' },
         {
             stage: '2.add',
@@ -402,6 +398,8 @@ describe('timer', function() {
             id: '114116',
             msg: 'done'
         },
+        { stage: '2.add', event: 'proc-callfun-beforeEnd', msg: 'start...' },
+        { stage: '2.add', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '2.add', event: 'end', msg: 'done' },
         {
             stage: '3.modify',
@@ -415,6 +413,12 @@ describe('timer', function() {
             id: '114116',
             msg: 'done'
         },
+        {
+            stage: '3.modify',
+            event: 'proc-callfun-beforeEnd',
+            msg: 'start...'
+        },
+        { stage: '3.modify', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '3.modify', event: 'end', msg: 'done' },
         {
             stage: '4.remove',
@@ -428,6 +432,12 @@ describe('timer', function() {
             id: '114116',
             msg: 'tag'
         },
+        {
+            stage: '4.remove',
+            event: 'proc-callfun-beforeEnd',
+            msg: 'start...'
+        },
+        { stage: '4.remove', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '4.remove', event: 'end', msg: 'done' },
         {
             stage: '5.add',
@@ -441,6 +451,8 @@ describe('timer', function() {
             id: '114116',
             msg: 'release-tag'
         },
+        { stage: '5.add', event: 'proc-callfun-beforeEnd', msg: 'start...' },
+        { stage: '5.add', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '5.add', event: 'end', msg: 'done' },
         {
             stage: '6.remove',
@@ -454,19 +466,25 @@ describe('timer', function() {
             id: '114116',
             msg: 'tag'
         },
+        {
+            stage: '6.remove',
+            event: 'proc-callfun-beforeEnd',
+            msg: 'start...'
+        },
+        { stage: '6.remove', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '6.remove', event: 'end', msg: 'done' },
         { stage: '6.remove', event: 'cancel', msg: 'no difference' },
         { stage: '6.remove', event: 'cancel', msg: 'no difference' },
         {
             stage: '7.eff-add',
-            event: 'proc-detect-remove',
+            event: 'proc-retake-remove',
             id: '114116',
             from: 'debounce',
             msg: 'release-tag'
         },
         {
             stage: '7.eff-add',
-            event: 'proc-detect-remove',
+            event: 'proc-retake-remove',
             id: '114116',
             from: 'debounce',
             msg: 'done'
@@ -483,6 +501,12 @@ describe('timer', function() {
             id: '114116',
             msg: 'done'
         },
+        {
+            stage: '7.eff-add',
+            event: 'proc-callfun-beforeEnd',
+            msg: 'start...'
+        },
+        { stage: '7.eff-add', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '7.eff-add', event: 'end', msg: 'done' },
         { stage: '7.eff-add', event: 'cancel', msg: 'no difference' }
     ]

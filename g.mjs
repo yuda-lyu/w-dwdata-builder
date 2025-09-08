@@ -16,6 +16,18 @@ w.fsCleanFolder(fdDwCurrent)
 let fdResult = './_result'
 w.fsCleanFolder(fdResult)
 
+//fdTagRemove
+let fdTagRemove = './_tagRemove'
+w.fsCleanFolder(fdTagRemove)
+
+//fdTaskCpActualSrc
+let fdTaskCpActualSrc = './_taskCpActualSrc'
+w.fsCleanFolder(fdTaskCpActualSrc)
+
+//fdTaskCpSrc
+let fdTaskCpSrc = './_taskCpSrc'
+w.fsCleanFolder(fdTaskCpSrc)
+
 //funDownload
 let funDownload = async() => {
 
@@ -114,9 +126,9 @@ let opt = {
     fdDwAttime,
     fdDwCurrent,
     fdResult,
-    // fdTagRemove,
-    // fdTaskCpActualSrc,
-    // fdTaskCpSrc,
+    fdTagRemove,
+    fdTaskCpActualSrc,
+    fdTaskCpSrc,
     funDownload,
     funGetCurrent,
     funRemove,
@@ -145,6 +157,8 @@ ev.on('change', (msg) => {
 // change { event: 'proc-add-callfun-add', id: '114116', msg: 'done' }
 // change { event: 'proc-add-callfun-add', id: '114115', msg: 'start...' }
 // change { event: 'proc-add-callfun-add', id: '114115', msg: 'done' }
+// change { event: 'proc-callfun-beforeEnd', msg: 'start...' }
+// change { event: 'proc-callfun-beforeEnd', msg: 'done' }
 // change { event: 'end', msg: 'done' }
 
 

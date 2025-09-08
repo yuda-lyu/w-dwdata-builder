@@ -1,31 +1,13 @@
-import fs from 'fs'
 import get from 'lodash-es/get.js'
-import size from 'lodash-es/size.js'
-import iseobj from 'wsemi/src/iseobj.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
 import isp0int from 'wsemi/src/isp0int.mjs'
-import isbol from 'wsemi/src/isbol.mjs'
 import isfun from 'wsemi/src/isfun.mjs'
-import ispm from 'wsemi/src/ispm.mjs'
 import cdbl from 'wsemi/src/cdbl.mjs'
-import str2b64 from 'wsemi/src/str2b64.mjs'
-import ltdtDiffByKey from 'wsemi/src/ltdtDiffByKey.mjs'
-import now2str from 'wsemi/src/now2str.mjs'
-import evem from 'wsemi/src/evem.mjs'
-import pmSeries from 'wsemi/src/pmSeries.mjs'
-import delay from 'wsemi/src/delay.mjs'
-import waitFun from 'wsemi/src/waitFun.mjs'
-import getErrorMessage from 'wsemi/src/getErrorMessage.mjs'
-import fsIsFile from 'wsemi/src/fsIsFile.mjs'
 import fsIsFolder from 'wsemi/src/fsIsFolder.mjs'
-import fsDeleteFile from 'wsemi/src/fsDeleteFile.mjs'
 import fsCleanFolder from 'wsemi/src/fsCleanFolder.mjs'
 import fsCreateFolder from 'wsemi/src/fsCreateFolder.mjs'
 import fsCopyFolder from 'wsemi/src/fsCopyFolder.mjs'
-import fsTaskCp from 'wsemi/src/fsTaskCp.mjs'
-import fsTreeFolder from 'wsemi/src/fsTreeFolder.mjs'
-import WSyslog from 'w-syslog/src/WSyslog.mjs'
-import ot from 'dayjs'
+import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
 
 
 /**
@@ -48,6 +30,11 @@ import ot from 'dayjs'
  * @returns {Object} 回傳事件物件，可呼叫函數on監聽change事件，可呼叫函數srlog額外進行事件紀錄
  * @example
  *
+ * import fs from 'fs'
+ * import _ from 'lodash-es'
+ * import w from 'wsemi'
+ * import WDwdataBuilder from './src/WDwdataBuilder.mjs'
+ *
  * //fdDwAttime
  * let fdDwAttime = `./_dwAttime`
  * w.fsCleanFolder(fdDwAttime)
@@ -59,6 +46,18 @@ import ot from 'dayjs'
  * //fdResult
  * let fdResult = './_result'
  * w.fsCleanFolder(fdResult)
+ *
+ * //fdTagRemove
+ * let fdTagRemove = './_tagRemove'
+ * w.fsCleanFolder(fdTagRemove)
+ *
+ * //fdTaskCpActualSrc
+ * let fdTaskCpActualSrc = './_taskCpActualSrc'
+ * w.fsCleanFolder(fdTaskCpActualSrc)
+ *
+ * //fdTaskCpSrc
+ * let fdTaskCpSrc = './_taskCpSrc'
+ * w.fsCleanFolder(fdTaskCpSrc)
  *
  * //funDownload
  * let funDownload = async() => {
@@ -155,6 +154,12 @@ import ot from 'dayjs'
  * }
  *
  * let opt = {
+ *     fdDwAttime,
+ *     fdDwCurrent,
+ *     fdResult,
+ *     fdTagRemove,
+ *     fdTaskCpActualSrc,
+ *     fdTaskCpSrc,
  *     funDownload,
  *     funGetCurrent,
  *     funRemove,
@@ -183,6 +188,8 @@ import ot from 'dayjs'
  * // change { event: 'proc-add-callfun-add', id: '114116', msg: 'done' }
  * // change { event: 'proc-add-callfun-add', id: '114115', msg: 'start...' }
  * // change { event: 'proc-add-callfun-add', id: '114115', msg: 'done' }
+ * // change { event: 'proc-callfun-beforeEnd', msg: 'start...' }
+ * // change { event: 'proc-callfun-beforeEnd', msg: 'done' }
  * // change { event: 'end', msg: 'done' }
  *
  */
@@ -211,21 +218,6 @@ let WDwdataBuilder = async(opt = {}) => {
     if (!fsIsFolder(fdDwCurrent)) {
         fsCreateFolder(fdDwCurrent)
     }
-
-    // //fdTagAdd
-    // let fdTagAdd = get(opt, 'fdTagAdd')
-    // if (!isestr(fdTagAdd)) {
-    //     fdTagAdd = './_tagAdd'
-    // }
-    // // if (!fsIsFolder(fdTagAdd)) {
-    // //     fsCreateFolder(fdTagAdd)
-    // // }
-
-    // //fdTagModify
-    // let fdTagModify = get(opt, 'fdTagModify')
-    // if (!isestr(fdTagModify)) {
-    //     fdTagModify = './_tagModify'
-    // }
 
     //fdTagRemove
     let fdTagRemove = get(opt, 'fdTagRemove')
@@ -299,20 +291,6 @@ let WDwdataBuilder = async(opt = {}) => {
         throw new Error(`invalid funRemove`)
     }
 
-    // //timeToleranceAdd
-    // let timeToleranceAdd = get(opt, 'timeToleranceAdd')
-    // if (!isp0int(timeToleranceAdd)) {
-    //     timeToleranceAdd = 60 * 60 * 1000
-    // }
-    // timeToleranceAdd = cdbl(timeToleranceAdd)
-
-    // //timeToleranceModify
-    // let timeToleranceModify = get(opt, 'timeToleranceModify')
-    // if (!isp0int(timeToleranceModify)) {
-    //     timeToleranceModify = 60 * 60 * 1000
-    // }
-    // timeToleranceModify = cdbl(timeToleranceModify)
-
     //timeToleranceRemove
     let timeToleranceRemove = get(opt, 'timeToleranceRemove')
     if (!isp0int(timeToleranceRemove)) {
@@ -320,788 +298,40 @@ let WDwdataBuilder = async(opt = {}) => {
     }
     timeToleranceRemove = cdbl(timeToleranceRemove)
 
-    //延遲偵測是否創建資料夾
-    // if (timeToleranceModify >= 0 && !fsIsFolder(fdTagModify)) {
-    //     fsCreateFolder(fdTagModify)
-    // }
-    if (timeToleranceRemove > 0 && !fsIsFolder(fdTagRemove)) {
-        fsCreateFolder(fdTagRemove)
-    }
+    //funBeforeEnd
+    let funBeforeEnd = async() => {
+        //成功處理完畢, 將fdDwAttime儲存至fdDwCurrent
 
-    //ev
-    let ev = evem()
+        //fsCleanFolder
+        fsCleanFolder(fdDwCurrent)
 
-    //_srlog
-    let _srlog = WSyslog({
-        fdLog,
-        interval: 'hr',
-    })
-
-    //srlog
-    let srlog = {
-        info: (msg) => {
-            _srlog.info(msg)
-            ev.emit('change', { type: 'info', ...msg })
-        },
-        warn: (msg) => {
-            _srlog.warn(msg)
-            ev.emit('change', { type: 'warn', ...msg })
-        },
-        error: (msg) => {
-            _srlog.error(msg)
-            ev.emit('change', { type: 'error', ...msg })
-        },
-    }
-
-    //tagCore
-    let tagCore = async (mode, fn, hash = '') => {
-
-        //fdTag
-        let fdTag = ''
-        if (mode === 'add') {
-            // fdTag = fdTagAdd
-            throw new Error(`does not support add`)
-        }
-        else if (mode === 'modify') {
-            // fdTag = fdTagModify
-            throw new Error(`does not support modify`)
-        }
-        else if (mode === 'remove') {
-            fdTag = fdTagRemove
-        }
-        else {
-            throw new Error(`invalid mode[${mode}]`)
-        }
-
-        //fp, 增加/變更/刪除清單資料夾內之檔案路徑
-        let fp = `${fdTag}/${fn}`
-
-        // //check, 防抖要能刷新起算時間, 故要持續writeFileSync
-        // if (fsIsFile(fp)) {
-        //     return
-        // }
-
-        //o
-        let o = {
-            time: now2str(),
-            hash,
-        }
-
-        //writeFileSync
-        fs.writeFileSync(fp, JSON.stringify(o), 'utf8')
-
-    }
-
-    // //tagAdd
-    // let tagAdd = async (fn) => {
-    //     let r = await tagCore('add', fn)
-    //     return r
-    // }
-
-    // //tagModify
-    // let tagModify = async (fn, hash) => {
-    //     let r = await tagCore('modify', fn, hash)
-    //     return r
-    // }
-
-    //tagRemove
-    let tagRemove = async (fn) => {
-        let r = await tagCore('remove', fn)
-        return r
-    }
-
-    //checkTagCore
-    let checkTagCore = async (mode, fn, opt = {}) => {
-
-        //checkTime
-        let checkTime = get(opt, 'checkTime')
-        if (!isbol(checkTime)) {
-            checkTime = true
-        }
-
-        //timeNow
-        let timeNow = get(opt, 'timeNow')
-
-        //fdTag, timeTolerance
-        let fdTag = ''
-        let timeTolerance = 0
-        if (mode === 'add') {
-            // fdTag = fdTagAdd
-            // timeTolerance = timeToleranceAdd
-            throw new Error(`does not support add`)
-        }
-        else if (mode === 'modify') {
-            // fdTag = fdTagModify
-            // timeTolerance = timeToleranceModify
-            throw new Error(`does not support modify`)
-        }
-        else if (mode === 'remove') {
-            fdTag = fdTagRemove
-            timeTolerance = timeToleranceRemove
-        }
-        else {
-            throw new Error(`invalid mode[${mode}]`)
-        }
-
-        //fp, 增加/變更/刪除清單資料夾內之檔案路徑
-        let fp = `${fdTag}/${fn}`
-
-        //check, 預期要有檔案, 若無檔案無法讀取內容
-        if (!fsIsFile(fp)) {
-            return {
-                b: false,
-                msg: `fp[${fp}] is not a file`,
-            }
-        }
-
-        //checkTime
-        if (!checkTime) {
-            return {
-                b: true,
-                msg: `fp[${fp}] exists`,
-            }
-        }
-
-        //check
-        if (!iseobj(timeNow)) {
-            throw new Error(`invalid timeNow`) //預期調用checkTagCore時若checkTime=true就一定要給timeNow, 沒給就報錯確保程式一定要通過單元測試
-        }
-
-        //j
-        let j = fs.readFileSync(fp, 'utf8')
-
-        //o
-        let o = JSON.parse(j)
-
-        //time
-        let time = get(o, 'time')
-
-        //ts
-        let ts = ot(time)
-
-        //te
-        let te = timeNow
-
-        //num
-        let num = te.diff(ts, 'millisecond')
-
-        //b
-        let b = num >= timeTolerance
-        // console.log(mode, fn, `num[${num}] >= timeTolerance[${timeTolerance}]`, b, 'checkTime', checkTime)
-        if (b) {
-            return {
-                b,
-                msg: `time difference[${num}] >= time tolerance[${timeTolerance}]`,
-            }
-        }
-        else {
-            return {
-                b,
-                msg: `allowable time difference`,
-            }
-        }
-    }
-
-    // //checkTagAdd
-    // let checkTagAdd = async (fn, opt = {}) => {
-    //     let r = await checkTagCore('add', fn, opt)
-    //     return r
-    // }
-
-    // //checkTagModify
-    // let checkTagModify = async (fn, opt = {}) => {
-    //     let r = await checkTagCore('modify', fn, opt)
-    //     return r
-    // }
-
-    //checkTagRemove
-    let checkTagRemove = async (fn, opt = {}) => {
-        let r = await checkTagCore('remove', fn, opt)
-        return r
-    }
-
-    //releaseTagCore
-    let releaseTagCore = async (mode, fn) => {
-
-        //fdTag
-        let fdTag = ''
-        if (mode === 'add') {
-            // fdTag = fdTagAdd
-            throw new Error(`does not support add`)
-        }
-        else if (mode === 'modify') {
-            // fdTag = fdTagModify
-            throw new Error(`does not support modify`)
-        }
-        else if (mode === 'remove') {
-            fdTag = fdTagRemove
-        }
-        else {
-            throw new Error(`invalid mode[${mode}]`)
-        }
-
-        //fp, 增加/變更/刪除清單資料夾內之檔案路徑
-        let fp = `${fdTag}/${fn}`
-
-        //check, 若有檔案才刪除
-        if (!fsIsFile(fp)) {
-            return
-        }
-
-        //j
-        let j = fs.readFileSync(fp, 'utf8')
-
-        //o
-        let o = JSON.parse(j)
-
-        //fsDeleteFile
-        let r = fsDeleteFile(fp)
+        //fsCopyFolder
+        let r = fsCopyFolder(fdDwAttime, fdDwCurrent)
 
         //check
         if (r.error) {
             throw new Error(r.error)
         }
 
-        return o
     }
 
-    // //releaseTagAdd
-    // let releaseTagAdd = async (fn) => {
-    //     let r = await releaseTagCore('add', fn)
-    //     return r
-    // }
-
-    // //releaseTagModify
-    // let releaseTagModify = async (fn) => {
-    //     let r = await releaseTagCore('modify', fn)
-    //     return r
-    // }
-
-    //releaseTagRemove
-    let releaseTagRemove = async (fn) => {
-        let r = await releaseTagCore('remove', fn)
-        return r
+    let optBd = {
+        keyId,
+        fdTagRemove,
+        fdTaskCpActualSrc,
+        fdTaskCpSrc,
+        fdLog,
+        funGetNew: funDownload,
+        funGetCurrent,
+        funAdd,
+        funModify,
+        funRemove,
+        funAfterStart: null,
+        funBeforeEnd,
+        timeToleranceRemove,
+        eventNameProcCallfunGetNew: 'proc-callfun-download',
     }
-
-    //coreSrc
-    let otkSrc = null
-    let coreSrc = async() => {
-
-        //因core執行初期ev尚未回傳給外部監聽, 故須delay延遲脫勾
-        await delay(1)
-
-        //ts
-        let ts = ot()
-
-        //calcTimeRun
-        let calcTimeRun = () => {
-
-            //te
-            let te = ot()
-
-            //s
-            let s = te.diff(ts, 'second')
-
-            //r
-            let r = {
-                timeRunStart: ts.format('YYYY-MM-DDTHH:mm:ssZ'),
-                timeRunEnd: te.format('YYYY-MM-DDTHH:mm:ssZ'),
-                timeRunSpent: `${s}s`,
-            }
-
-            return r
-        }
-
-        srlog.info({ event: 'start', msg: 'running...' })
-
-        //msgExit
-        let msgExit = ''
-
-        //fsTaskCp
-        let otkActual = fsTaskCp(fdTaskCpActualSrc, fdTaskCpActualSrc) //因不使用偵測端, 故設定fdTar=fdSrc
-
-        //otkActualSrc
-        let otkActualSrc = otkActual.buildSrc()
-        // otkActualSrc.on('set', (msg) => {
-        //     // console.log(`src send task...`, msg)
-        // })
-        // otkActualSrc.on('remove', (msg) => {
-        //     // console.log(`src send task...`, msg)
-        // })
-
-        //fsTaskCp
-        let otk = fsTaskCp(fdTaskCpSrc, fdTaskCpSrc) //因不使用偵測端, 故設定fdTar=fdSrc
-
-        //otkSrc
-        otkSrc = otk.buildSrc()
-        // otkSrc.on('set', (msg) => {
-        //     // console.log(`src send task...`, msg)
-        // })
-        // otkSrc.on('remove', (msg) => {
-        //     // console.log(`src send task...`, msg)
-        // })
-
-        //itemsAtt
-        let itemsAtt = []
-        if (true) {
-            try {
-
-                //funDownload
-                srlog.info({ event: 'proc-callfun-download', msg: 'start...' })
-                let q = funDownload()
-                if (ispm(q)) {
-                    q = await q
-                }
-                srlog.info({ event: 'proc-callfun-download', num: size(q), msg: 'done' })
-
-                //save
-                itemsAtt = q
-
-            }
-            catch (err) {
-                console.log(err)
-                srlog.error({ event: 'proc-callfun-download', msg: getErrorMessage(err) })
-                msgExit = 'error at proc-callfun-download'
-            }
-        }
-
-        //check
-        if (isestr(msgExit)) {
-            console.log(`error occurred, task canceled`) //程序發生錯誤, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: msgExit })
-            return
-        }
-
-        //itemsCur
-        let itemsCur = []
-        if (true) {
-            try {
-
-                //funGetCurrent
-                srlog.info({ event: 'proc-callfun-getCurrent', msg: 'start...' })
-                let q = funGetCurrent()
-                if (ispm(q)) {
-                    q = await q
-                }
-                srlog.info({ event: 'proc-callfun-getCurrent', num: size(q), msg: 'done' })
-
-                //save
-                itemsCur = q
-
-            }
-            catch (err) {
-                console.log(err)
-                srlog.error({ event: 'proc-callfun-getCurrent', msg: getErrorMessage(err) })
-                msgExit = 'error at proc-callfun-getCurrent'
-            }
-        }
-
-        //check
-        if (isestr(msgExit)) {
-            console.log(`error occurred, task canceled`) //程序發生錯誤, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: msgExit })
-            return
-        }
-
-        //check
-        if (size(itemsAtt) === 0) {
-            console.log(`invalid data, task canceled`) //無法取得有效數據, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'no data' })
-            return
-        }
-
-        // //check
-        // if (size(itemsCur) - size(itemsAtt) > 10) {
-        //     console.log(`difference between the data before and after is too large, size(itemsCur)[${size(itemsCur)}]-size(itemsAtt)[${size(itemsAtt)}]>10`) //當前取得數據與已儲存數據之數量差距超過10, 不進行後續動作, 當前取得數據筆數[${size(itemsAtt)}], 已儲存數據筆數[${size(itemsCur)}]
-        //     srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'difference between the data before and after is too large' })
-        //     return
-        // }
-
-        //ltdtDiffByKey
-        let r = null
-        if (true) {
-            try {
-
-                srlog.info({ event: 'compare', msg: 'start...' })
-                let ltdtSrc = itemsAtt
-                // console.log('ltdtSrc', ltdtSrc)
-                let ltdtTar = itemsCur
-                // console.log('ltdtTar', ltdtTar)
-                r = ltdtDiffByKey(ltdtTar, ltdtSrc, keyId, { withInfor: false })
-                // console.log('ltdtDiffByKey', r)
-                //   del: [ {...} ],
-                //   add: [ {...} ],
-                //   same: [ {...} ],
-                //   diff: [ {...} ],
-                let numDel = size(r.del)
-                let numAdd = size(r.add)
-                let numDiff = size(r.diff)
-                let numSame = size(r.same)
-                srlog.info({ event: 'compare', numRemove: numDel, numAdd, numModify: numDiff, numSame, msg: 'done' })
-
-            }
-            catch (err) {
-                console.log(err)
-                srlog.error({ event: 'compare', msg: getErrorMessage(err) })
-            }
-        }
-
-        //check
-        if (!iseobj(r)) {
-            console.log(`can not calculate the difference, task canceled`) //無法計算當前取得與已儲存數據之差異, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'can not calculate the difference between the data before and after' })
-            return
-        }
-
-        //check
-        if (size(r.del) === 0 && size(r.add) === 0 && size(r.diff) === 0) {
-            //當前取得與已儲存數據無差異, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: 'no difference' })
-            return
-        }
-
-        //trigger del
-        await pmSeries(r.del, async(v) => {
-
-            //check
-            if (isestr(msgExit)) {
-                return
-            }
-
-            //funRemove
-            try {
-                srlog.info({ event: 'proc-remove-callfun-remove', [keyId]: v[keyId], msg: 'start...' })
-                let q = funRemove(v)
-                if (ispm(q)) {
-                    q = await q
-                }
-                // srlog.info({ event: 'proc-remove-callfun-remove', [keyId]: v[keyId], msg: 'done' })
-            }
-            catch (err) {
-                console.log(err)
-                srlog.error({ event: 'proc-remove-callfun-remove', [keyId]: v[keyId], msg: getErrorMessage(err) })
-                msgExit = 'error at proc-remove-callfun-remove'
-            }
-
-            //check
-            if (isestr(msgExit)) {
-                return
-            }
-
-            //remove
-            try {
-
-                //otkActualSrc.remove
-                otkActualSrc.remove(v[keyId])
-                if (timeToleranceRemove <= 0) {
-                    //若未給予刪除誤差
-
-                    //otkSrc.remove
-                    otkSrc.remove(v[keyId])
-
-                    srlog.info({ event: 'proc-remove-callfun-remove', [keyId]: v[keyId], msg: 'done' })
-                }
-                else {
-                    //若有給予刪除誤差
-
-                    //checkTagRemove
-                    let r = await checkTagRemove(v[keyId], { checkTime: false })
-
-                    //check, 是否位於刪除清單內
-                    if (r.b) {
-                        //若位於刪除清單, 不呼叫tagRemove更新[刪除tag]
-                    }
-                    else {
-                        //若位於刪除清單, 呼叫tagRemove新增[刪除tag]
-
-                        //tagRemove
-                        await tagRemove(v[keyId])
-
-                        srlog.info({ event: 'proc-remove-callfun-remove', [keyId]: v[keyId], msg: 'tag' })
-                    }
-
-                }
-
-            }
-            catch (err) {
-                console.log(err)
-                srlog.error({ event: 'proc-remove-otkActual-remove', [keyId]: v[keyId], msg: getErrorMessage(err) })
-                msgExit = 'error at proc-remove-otkActual-remove'
-            }
-
-        })
-
-        //check
-        if (isestr(msgExit)) {
-            console.log(`error occurred, task canceled`) //程序發生錯誤, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: msgExit })
-            return
-        }
-
-        //trigger add
-        await pmSeries(r.add, async(v) => {
-
-            //check
-            if (isestr(msgExit)) {
-                return
-            }
-
-            //funAdd
-            try {
-                srlog.info({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: 'start...' })
-                let q = funAdd(v)
-                if (ispm(q)) {
-                    q = await q
-                }
-                // srlog.info({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: 'done' })
-            }
-            catch (err) {
-                console.log(err)
-                srlog.error({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: getErrorMessage(err) })
-                msgExit = 'error at proc-add-callfun-add'
-            }
-
-            //check
-            if (isestr(msgExit)) {
-                return
-            }
-
-            //set
-            try {
-
-                //hash
-                let hash = str2b64(JSON.stringify(v))
-
-                //otkActualSrc.set
-                otkActualSrc.set(v[keyId], hash)
-                if (timeToleranceRemove <= 0) {
-                    //若未給予刪除誤差
-
-                    //otkSrc.set
-                    otkSrc.set(v[keyId], hash)
-
-                    srlog.info({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: 'done' })
-                }
-                else {
-                    //若有給予刪除誤差
-
-                    //checkTagRemove
-                    let r = await checkTagRemove(v[keyId], { checkTime: false })
-
-                    //check, 是否位於刪除清單內
-                    if (r.b) {
-                        //若位於刪除清單, 則呼叫releaseTagRemove清除[刪除tag]
-
-                        //releaseTagRemove
-                        await releaseTagRemove(v[keyId])
-
-                        srlog.info({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: 'release-tag' })
-                    }
-                    else {
-                        //若非位於刪除清單, 則呼叫otkSrc.set
-
-                        //otkSrc.set
-                        otkSrc.set(v[keyId], hash)
-
-                        srlog.info({ event: 'proc-add-callfun-add', [keyId]: v[keyId], msg: 'done' })
-                    }
-
-                }
-
-            }
-            catch (err) {
-                console.log(err)
-                srlog.error({ event: 'proc-add-otkActual-set', [keyId]: v[keyId], msg: getErrorMessage(err) })
-                msgExit = 'error at proc-add-otkActual-set'
-            }
-
-        })
-
-        //check
-        if (isestr(msgExit)) {
-            console.log(`error occurred, task canceled`) //程序發生錯誤, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: msgExit })
-            return
-        }
-
-        //trigger diff
-        await pmSeries(r.diff, async(v) => {
-
-            //check
-            if (isestr(msgExit)) {
-                return
-            }
-
-            //funModify
-            try {
-                srlog.info({ event: 'proc-diff-callfun-modify', [keyId]: v[keyId], msg: 'start...' })
-                let q = funModify(v)
-                if (ispm(q)) {
-                    q = await q
-                }
-                // srlog.info({ event: 'proc-diff-callfun-modify', [keyId]: v[keyId], msg: 'done' })
-            }
-            catch (err) {
-                console.log(err)
-                srlog.error({ event: 'proc-diff-callfun-modify', [keyId]: v[keyId], msg: getErrorMessage(err) })
-                msgExit = 'error at proc-diff-callfun-modify'
-            }
-
-            //check
-            if (isestr(msgExit)) {
-                return
-            }
-
-            //set
-            try {
-
-                //hash
-                let hash = str2b64(JSON.stringify(v))
-
-                //otkActualSrc.et
-                otkActualSrc.set(v[keyId], hash)
-
-                //otkSrc.et
-                otkSrc.set(v[keyId], hash)
-
-                srlog.info({ event: 'proc-diff-callfun-modify', [keyId]: v[keyId], msg: 'done' })
-            }
-            catch (err) {
-                console.log(err)
-                srlog.error({ event: 'proc-diff-otkActual-set', [keyId]: v[keyId], msg: getErrorMessage(err) })
-                msgExit = 'error at proc-diff-otkActual-set'
-            }
-
-        })
-
-        //check
-        if (isestr(msgExit)) {
-            console.log(`error occurred, task canceled`) //程序發生錯誤, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: msgExit })
-            return
-        }
-
-        //成功處理完畢, 將fdDwAttime儲存至fdDwCurrent
-        if (true) {
-
-            //fsCleanFolder
-            fsCleanFolder(fdDwCurrent)
-
-            //fsCopyFolder
-            let r = fsCopyFolder(fdDwAttime, fdDwCurrent)
-
-            //check
-            if (r.error) {
-                console.log(r.error)
-                srlog.error({ event: 'task-update-rawData', msg: r.error })
-                msgExit = 'error at task-update-rawData'
-                return
-            }
-
-        }
-
-        //check
-        if (isestr(msgExit)) {
-            console.log(`error occurred, task canceled`) //程序發生錯誤, 不進行後續動作
-            srlog.info({ event: 'cancel', ...calcTimeRun(), msg: msgExit })
-            return
-        }
-
-        srlog.info({ event: 'end', ...calcTimeRun(), msg: 'done' })
-
-    }
-
-    let pmSrc = coreSrc()
-        .catch((err) => {
-            console.log(err)
-            srlog.error({ event: 'proc-coreSrc', msg: getErrorMessage(err) })
-        })
-
-    let coreDetect = async() => {
-
-        //wait
-        await waitFun(() => {
-            return otkSrc !== null
-        })
-
-        //timeNow
-        let timeNow = ot()
-
-        //vfpsRemove
-        let vfpsRemove = fsTreeFolder(fdTagRemove, 1)
-
-        // //vfpsModify
-        // let vfpsModify = fsTreeFolder(fdTagModify, 1)
-
-        //check
-        // if (size(vfpsRemove) === 0 && size(vfpsModify) === 0) {
-        //     return
-        // }
-        if (size(vfpsRemove) === 0) {
-            return
-        }
-
-        await pmSeries(vfpsRemove, async(v) => {
-
-            //checkTagRemove
-            let r = await checkTagRemove(v.name, { timeNow, checkTime: true }) //v.name對應v[keyId]
-
-            //check, 刪除任務之時間是否已超過容許值門檻
-            if (r.b) {
-                //時間差已超過容許值門檻, 則呼叫releaseTagRemove清除[刪除tag], 與呼叫otkSrc.remove
-
-                await releaseTagRemove(v.name) //v.name對應v[keyId]
-
-                srlog.info({ event: 'proc-detect-remove', [keyId]: v.name, from: 'debounce', msg: 'release-tag' })
-
-                otkSrc.remove(v.name) //v.name對應v[keyId]
-
-                srlog.info({ event: 'proc-detect-remove', [keyId]: v.name, from: 'debounce', msg: 'done' })
-
-            }
-            else {
-                //時間差未超過容許值門檻, 不處理
-            }
-
-        })
-
-        // await pmSeries(vfpsModify, async(v) => {
-
-        //     //checkTagModify
-        //     let r = await checkTagModify(v.name, { timeNow, checkTime: true }) //v.name對應v[keyId]
-
-        //     //check, 變更任務之時間是否已超過容許值門檻
-        //     if (r.b) {
-
-        //         //時間差已超過容許值門檻, 則須呼叫releaseTagModify偵測與清除變更tag, 再呼叫otkSrc.set
-        //         let rModify = await releaseTagModify(v.name)
-        //         otkSrc.set(v.name, rModify.hash) //v.name對應v[keyId]
-
-        //         srlog.info({ event: 'proc-diff-modify', [keyId]: v.name, from: 'debounce', msg: 'done' })
-
-        //     }
-        //     else {
-        //         //時間差未超過容許值門檻, 不處理
-        //     }
-
-        // })
-
-    }
-
-    let pmDetect = coreDetect()
-        .catch((err) => {
-            console.log(err)
-            srlog.error({ event: 'proc-coreDetect', msg: getErrorMessage(err) })
-        })
-
-    //save
-    ev.srlog = srlog
-
-    //emit end
-    Promise.all([pmSrc, pmDetect])
-        .finally(() => {
-            ev.emit('end')
-        })
+    let ev = WDataScheduler(optBd)
 
     return ev
 }

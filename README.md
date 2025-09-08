@@ -37,6 +37,18 @@ w.fsCleanFolder(fdDwCurrent)
 let fdResult = './_result'
 w.fsCleanFolder(fdResult)
 
+//fdTagRemove
+let fdTagRemove = './_tagRemove'
+w.fsCleanFolder(fdTagRemove)
+
+//fdTaskCpActualSrc
+let fdTaskCpActualSrc = './_taskCpActualSrc'
+w.fsCleanFolder(fdTaskCpActualSrc)
+
+//fdTaskCpSrc
+let fdTaskCpSrc = './_taskCpSrc'
+w.fsCleanFolder(fdTaskCpSrc)
+
 //funDownload
 let funDownload = async() => {
 
@@ -132,6 +144,12 @@ let funModify = async(v) => {
 }
 
 let opt = {
+    fdDwAttime,
+    fdDwCurrent,
+    fdResult,
+    fdTagRemove,
+    fdTaskCpActualSrc,
+    fdTaskCpSrc,
     funDownload,
     funGetCurrent,
     funRemove,
@@ -144,6 +162,9 @@ let ev = await WDwdataBuilder(opt)
     })
 ev.on('change', (msg) => {
     delete msg.type
+    delete msg.timeRunStart
+    delete msg.timeRunEnd
+    delete msg.timeRunSpent
     console.log('change', msg)
 })
 // change { event: 'start', msg: 'running...' }
@@ -152,10 +173,12 @@ ev.on('change', (msg) => {
 // change { event: 'proc-callfun-getCurrent', msg: 'start...' }
 // change { event: 'proc-callfun-getCurrent', num: 0, msg: 'done' }
 // change { event: 'compare', msg: 'start...' }
-// change { event: 'compare', msg: 'done' }
+// change { event: 'compare', numRemove: 0, numAdd: 2, numModify: 0, numSame: 0, msg: 'done' }
 // change { event: 'proc-add-callfun-add', id: '114116', msg: 'start...' }
 // change { event: 'proc-add-callfun-add', id: '114116', msg: 'done' }
 // change { event: 'proc-add-callfun-add', id: '114115', msg: 'start...' }
 // change { event: 'proc-add-callfun-add', id: '114115', msg: 'done' }
+// change { event: 'proc-callfun-beforeEnd', msg: 'start...' }
+// change { event: 'proc-callfun-beforeEnd', msg: 'done' }
 // change { event: 'end', msg: 'done' }
 ```
