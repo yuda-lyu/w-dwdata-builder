@@ -2,6 +2,7 @@ import get from 'lodash-es/get.js'
 import isestr from 'wsemi/src/isestr.mjs'
 import isp0int from 'wsemi/src/isp0int.mjs'
 import isfun from 'wsemi/src/isfun.mjs'
+import ispm from 'wsemi/src/ispm.mjs'
 import cdbl from 'wsemi/src/cdbl.mjs'
 import fsIsFolder from 'wsemi/src/fsIsFolder.mjs'
 import fsCleanFolder from 'wsemi/src/fsCleanFolder.mjs'
@@ -26,6 +27,8 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  * @param {Function} [opt.funAdd=null] 輸入當有新資料時，需要連動處理之函數，預設null
  * @param {Function} [opt.funModify=null] 輸入當有資料需更新時，需要連動處理之函數，預設null
  * @param {Function} [opt.funRemove=null] 輸入當有資料需刪除時，需要連動處理之函數，預設null
+ * @param {Function} [opt.funAfterStart=null] 輸入偵測程序剛開始啟動時，需要處理之函數，預設null
+ * @param {Function} [opt.funBeforeEnd=null] 輸入偵測程序要結束前，需要處理之函數，預設null
  * @param {Number} [opt.timeToleranceRemove=0] 輸入刪除任務之防抖時長，單位ms，預設0，代表不使用
  * @returns {Object} 回傳事件物件，可呼叫函數on監聽change事件，可呼叫函數srlog額外進行事件紀錄
  * @example
@@ -178,6 +181,8 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  *     console.log('change', msg)
  * })
  * // change { event: 'start', msg: 'running...' }
+ * // change { event: 'proc-callfun-afterStart', msg: 'start...' }
+ * // change { event: 'proc-callfun-afterStart', msg: 'done' }
  * // change { event: 'proc-callfun-download', msg: 'start...' }
  * // change { event: 'proc-callfun-download', num: 2, msg: 'done' }
  * // change { event: 'proc-callfun-getCurrent', msg: 'start...' }
@@ -291,6 +296,12 @@ let WDwdataBuilder = async(opt = {}) => {
         throw new Error(`invalid funRemove`)
     }
 
+    //funAfterStartCall
+    let funAfterStartCall = get(opt, 'funAfterStart')
+
+    //funBeforeEndCall
+    let funBeforeEndCall = get(opt, 'funBeforeEnd')
+
     //timeToleranceRemove
     let timeToleranceRemove = get(opt, 'timeToleranceRemove')
     if (!isp0int(timeToleranceRemove)) {
@@ -298,8 +309,8 @@ let WDwdataBuilder = async(opt = {}) => {
     }
     timeToleranceRemove = cdbl(timeToleranceRemove)
 
-    //funBeforeEnd
-    let funBeforeEnd = async() => {
+    //funBeforeEndNec
+    let funBeforeEndNec = async() => {
         //成功處理完畢, 將fdDwAttime儲存至fdDwCurrent
 
         //fsCleanFolder
@@ -315,6 +326,32 @@ let WDwdataBuilder = async(opt = {}) => {
 
     }
 
+    let funAfterStart = async() => {
+
+        if (isfun(funAfterStartCall)) {
+            let r = funAfterStartCall
+            if (ispm(r)) {
+                r = await r
+            }
+        }
+
+        //無funAfterStartNec
+
+    }
+
+    let funBeforeEnd = async() => {
+
+        await funBeforeEndNec()
+
+        if (isfun(funBeforeEndCall)) {
+            let r = funBeforeEndCall
+            if (ispm(r)) {
+                r = await r
+            }
+        }
+
+    }
+
     let optBd = {
         keyId,
         fdTagRemove,
@@ -326,7 +363,7 @@ let WDwdataBuilder = async(opt = {}) => {
         funAdd,
         funModify,
         funRemove,
-        funAfterStart: null,
+        funAfterStart,
         funBeforeEnd,
         timeToleranceRemove,
         eventNameProcCallfunGetNew: 'proc-callfun-download',

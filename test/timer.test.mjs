@@ -310,6 +310,7 @@ describe('timer', function() {
                 delete msg.timeRunSpent
                 if (w.arrHas(msg.event, [
                     'start',
+                    'proc-callfun-afterStart',
                     'proc-callfun-download',
                     'proc-callfun-getCurrent',
                     'compare',

@@ -157,13 +157,15 @@ describe('once', function() {
             ms.push(msg)
         })
         ev.on('end', (msg) => {
-            // console.log('ms', ms)
+            console.log('ms', ms)
             w.fsDeleteFolder(fdDwAttime)
             w.fsDeleteFolder(fdDwCurrent)
             w.fsDeleteFolder(fdResult)
             pm.resolve(ms)
         })
         // change { event: 'start', msg: 'running...' }
+        // change { event: 'proc-callfun-afterStart', msg: 'start...' }
+        // change { event: 'proc-callfun-afterStart', msg: 'done' }
         // change { event: 'proc-callfun-download', msg: 'start...' }
         // change { event: 'proc-callfun-download', num: 2, msg: 'done' }
         // change { event: 'proc-callfun-getCurrent', msg: 'start...' }
@@ -186,6 +188,8 @@ describe('once', function() {
     }
     let ms = [
         { event: 'start', msg: 'running...' },
+        { event: 'proc-callfun-afterStart', msg: 'start...' },
+        { event: 'proc-callfun-afterStart', msg: 'done' },
         { event: 'proc-callfun-download', msg: 'start...' },
         { event: 'proc-callfun-download', num: 2, msg: 'done' },
         { event: 'proc-callfun-getCurrent', msg: 'start...' },
