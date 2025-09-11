@@ -352,7 +352,7 @@ let WDwdataBuilder = async(opt = {}) => {
 
     }
 
-    let optBd = {
+    let optSdr = {
         keyId,
         fdTagRemove,
         fdTaskCpActualSrc,
@@ -368,7 +368,7 @@ let WDwdataBuilder = async(opt = {}) => {
         timeToleranceRemove,
         eventNameProcCallfunGetNew: 'proc-callfun-download',
     }
-    let ev = WDataScheduler(optBd)
+    let ev = WDataScheduler(optSdr)
 
     return ev
 }
