@@ -4,6 +4,10 @@ import w from 'wsemi'
 import WDwdataBuilder from './src/WDwdataBuilder.mjs'
 
 
+//fdResult, 額外創建供另產結果之用
+let fdResult = `./_result`
+w.fsCleanFolder(fdResult)
+
 //fdDwAttime
 let fdDwAttime = `./_dwAttime`
 w.fsCleanFolder(fdDwAttime)
@@ -12,20 +16,16 @@ w.fsCleanFolder(fdDwAttime)
 let fdDwCurrent = `./_dwCurrent`
 w.fsCleanFolder(fdDwCurrent)
 
-//fdResult
-let fdResult = './_result'
-w.fsCleanFolder(fdResult)
-
 //fdTagRemove
-let fdTagRemove = './_tagRemove'
+let fdTagRemove = `./_tagRemove`
 w.fsCleanFolder(fdTagRemove)
 
 //fdTaskCpActualSrc
-let fdTaskCpActualSrc = './_taskCpActualSrc'
+let fdTaskCpActualSrc = `./_taskCpActualSrc`
 w.fsCleanFolder(fdTaskCpActualSrc)
 
 //fdTaskCpSrc
-let fdTaskCpSrc = './_taskCpSrc'
+let fdTaskCpSrc = `./_taskCpSrc`
 w.fsCleanFolder(fdTaskCpSrc)
 
 let items1 = [
@@ -279,7 +279,6 @@ let run = async() => {
     let opt = {
         fdDwAttime,
         fdDwCurrent,
-        fdResult,
         fdTagRemove,
         fdTaskCpActualSrc,
         fdTaskCpSrc,
@@ -311,7 +310,6 @@ let run = async() => {
         console.log('change', msg)
     })
     ev.on('end', () => {
-        console.log('run end')
         pm.resolve()
     })
 

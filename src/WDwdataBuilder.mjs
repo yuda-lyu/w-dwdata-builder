@@ -12,15 +12,16 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
 
 
 /**
- * 下載數據建構器
+ * 基於檔案之下載數據與任務建構器
+ *
+ * 執行階段最新數據放置於fdDwAttime，前次數據放置於fdDwCurrent，於結束前會將fdDwAttime複製蓋過fdDwCurrent
  *
  * @param {Object} [opt={}] 輸入設定物件，預設{}
  * @param {String} [opt.keyId='keyId'] 輸入各筆數據之主鍵字串，預設'keyId'
  * @param {String} [opt.fdDwAttime='./_dwAttime'] 輸入當前下載數據資料夾字串，預設'./_dwAttime'
  * @param {String} [opt.fdDwCurrent='./_dwCurrent'] 輸入已下載數據資料夾字串，預設'./_dwCurrent'
- * @param {String} [opt.fdResult='./_result'] 輸入已下載數據所連動生成數據資料夾字串，預設'./_result'
- * @param {String} [opt.fdTaskCpActualSrc='./_taskCpActualSrc'] 輸入任務狀態之來源端完整資料夾字串，預設'./_taskCpActualSrc'
- * @param {String} [opt.fdTaskCpSrc='./_taskCpSrc'] 輸入任務狀態之來源端資料夾字串，預設'./_taskCpSrc'
+ * @param {String} [opt.fdTaskCpActualSrc=`./_taskCpActualSrc`] 輸入任務狀態之來源端完整資料夾字串，預設`./_taskCpActualSrc`
+ * @param {String} [opt.fdTaskCpSrc=`./_taskCpSrc`] 輸入任務狀態之來源端資料夾字串，預設`./_taskCpSrc`
  * @param {String} [opt.fdLog='./_logs'] 輸入儲存log資料夾字串，預設'./_logs'
  * @param {Function} [opt.funDownload=null] 輸入自定義當前下載之hash數據處理函數，回傳資料陣列，預設null
  * @param {Function} [opt.funGetCurrent=null] 輸入自定義已下載之hash數據處理函數，回傳資料陣列，預設null
@@ -38,6 +39,10 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  * import w from 'wsemi'
  * import WDwdataBuilder from './src/WDwdataBuilder.mjs'
  *
+ * //fdResult, 額外創建供另產結果之用
+ * let fdResult = `./_result`
+ * w.fsCleanFolder(fdResult)
+ *
  * //fdDwAttime
  * let fdDwAttime = `./_dwAttime`
  * w.fsCleanFolder(fdDwAttime)
@@ -46,20 +51,16 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  * let fdDwCurrent = `./_dwCurrent`
  * w.fsCleanFolder(fdDwCurrent)
  *
- * //fdResult
- * let fdResult = './_result'
- * w.fsCleanFolder(fdResult)
- *
  * //fdTagRemove
- * let fdTagRemove = './_tagRemove'
+ * let fdTagRemove = `./_tagRemove`
  * w.fsCleanFolder(fdTagRemove)
  *
  * //fdTaskCpActualSrc
- * let fdTaskCpActualSrc = './_taskCpActualSrc'
+ * let fdTaskCpActualSrc = `./_taskCpActualSrc`
  * w.fsCleanFolder(fdTaskCpActualSrc)
  *
  * //fdTaskCpSrc
- * let fdTaskCpSrc = './_taskCpSrc'
+ * let fdTaskCpSrc = `./_taskCpSrc`
  * w.fsCleanFolder(fdTaskCpSrc)
  *
  * //funDownload
@@ -159,7 +160,6 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  * let opt = {
  *     fdDwAttime,
  *     fdDwCurrent,
- *     fdResult,
  *     fdTagRemove,
  *     fdTaskCpActualSrc,
  *     fdTaskCpSrc,
@@ -227,22 +227,13 @@ let WDwdataBuilder = async(opt = {}) => {
     //fdTagRemove
     let fdTagRemove = get(opt, 'fdTagRemove')
     if (!isestr(fdTagRemove)) {
-        fdTagRemove = './_tagRemove'
-    }
-
-    //fdResult
-    let fdResult = get(opt, 'fdResult')
-    if (!isestr(fdResult)) {
-        fdResult = './_result'
-    }
-    if (!fsIsFolder(fdResult)) {
-        fsCreateFolder(fdResult)
+        fdTagRemove = `./_tagRemove`
     }
 
     //fdTaskCpActualSrc
     let fdTaskCpActualSrc = get(opt, 'fdTaskCpActualSrc')
     if (!isestr(fdTaskCpActualSrc)) {
-        fdTaskCpActualSrc = './_taskCpActualSrc'
+        fdTaskCpActualSrc = `./_taskCpActualSrc`
     }
     if (!fsIsFolder(fdTaskCpActualSrc)) {
         fsCreateFolder(fdTaskCpActualSrc)
@@ -251,7 +242,7 @@ let WDwdataBuilder = async(opt = {}) => {
     //fdTaskCpSrc
     let fdTaskCpSrc = get(opt, 'fdTaskCpSrc')
     if (!isestr(fdTaskCpSrc)) {
-        fdTaskCpSrc = './_taskCpSrc'
+        fdTaskCpSrc = `./_taskCpSrc`
     }
     if (!fsIsFolder(fdTaskCpSrc)) {
         fsCreateFolder(fdTaskCpSrc)
@@ -329,7 +320,7 @@ let WDwdataBuilder = async(opt = {}) => {
     let funAfterStart = async() => {
 
         if (isfun(funAfterStartCall)) {
-            let r = funAfterStartCall
+            let r = funAfterStartCall()
             if (ispm(r)) {
                 r = await r
             }
@@ -344,7 +335,7 @@ let WDwdataBuilder = async(opt = {}) => {
         await funBeforeEndNec()
 
         if (isfun(funBeforeEndCall)) {
-            let r = funBeforeEndCall
+            let r = funBeforeEndCall()
             if (ispm(r)) {
                 r = await r
             }

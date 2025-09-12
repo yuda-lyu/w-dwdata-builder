@@ -13,6 +13,10 @@ describe('once', function() {
 
         let ms = []
 
+        //fdResult, 額外創建供另產結果之用
+        let fdResult = `./_once_result`
+        w.fsCleanFolder(fdResult)
+
         //fdDwAttime
         let fdDwAttime = `./_once_dwAttime`
         w.fsCleanFolder(fdDwAttime)
@@ -21,20 +25,16 @@ describe('once', function() {
         let fdDwCurrent = `./_once_dwCurrent`
         w.fsCleanFolder(fdDwCurrent)
 
-        //fdResult
-        let fdResult = './_once_result'
-        w.fsCleanFolder(fdResult)
-
         //fdTagRemove
-        let fdTagRemove = './_once_tagRemove'
+        let fdTagRemove = `./_once_tagRemove`
         w.fsCleanFolder(fdTagRemove)
 
         //fdTaskCpActualSrc
-        let fdTaskCpActualSrc = './_once_taskCpActualSrc'
+        let fdTaskCpActualSrc = `./_once_taskCpActualSrc`
         w.fsCleanFolder(fdTaskCpActualSrc)
 
         //fdTaskCpSrc
-        let fdTaskCpSrc = './_once_taskCpSrc'
+        let fdTaskCpSrc = `./_once_taskCpSrc`
         w.fsCleanFolder(fdTaskCpSrc)
 
         //funDownload
@@ -134,7 +134,6 @@ describe('once', function() {
         let opt = {
             fdDwAttime,
             fdDwCurrent,
-            fdResult,
             fdTagRemove,
             fdTaskCpActualSrc,
             fdTaskCpSrc,
@@ -156,11 +155,14 @@ describe('once', function() {
             // console.log('change', msg)
             ms.push(msg)
         })
-        ev.on('end', (msg) => {
-            console.log('ms', ms)
+        ev.on('end', () => {
+            w.fsDeleteFolder(fdResult)
             w.fsDeleteFolder(fdDwAttime)
             w.fsDeleteFolder(fdDwCurrent)
-            w.fsDeleteFolder(fdResult)
+            w.fsDeleteFolder(fdTagRemove)
+            w.fsDeleteFolder(fdTaskCpActualSrc)
+            w.fsDeleteFolder(fdTaskCpSrc)
+            // console.log('ms', ms)
             pm.resolve(ms)
         })
         // change { event: 'start', msg: 'running...' }

@@ -13,6 +13,10 @@ describe('timer', function() {
 
         let ms = []
 
+        //fdResult, 額外創建供另產結果之用
+        let fdResult = `./_timer_result`
+        w.fsCleanFolder(fdResult)
+
         //fdDwAttime
         let fdDwAttime = `./_timer_dwAttime`
         w.fsCleanFolder(fdDwAttime)
@@ -21,20 +25,16 @@ describe('timer', function() {
         let fdDwCurrent = `./_timer_dwCurrent`
         w.fsCleanFolder(fdDwCurrent)
 
-        //fdResult
-        let fdResult = './_timer_result'
-        w.fsCleanFolder(fdResult)
-
         //fdTagRemove
-        let fdTagRemove = './_timer_tagRemove'
+        let fdTagRemove = `./_timer_tagRemove`
         w.fsCleanFolder(fdTagRemove)
 
         //fdTaskCpActualSrc
-        let fdTaskCpActualSrc = './_timer_taskCpActualSrc'
+        let fdTaskCpActualSrc = `./_timer_taskCpActualSrc`
         w.fsCleanFolder(fdTaskCpActualSrc)
 
         //fdTaskCpSrc
-        let fdTaskCpSrc = './_timer_taskCpSrc'
+        let fdTaskCpSrc = `./_timer_taskCpSrc`
         w.fsCleanFolder(fdTaskCpSrc)
 
         let items1 = [
@@ -288,7 +288,6 @@ describe('timer', function() {
             let opt = {
                 fdDwAttime,
                 fdDwCurrent,
-                fdResult,
                 fdTagRemove,
                 fdTaskCpActualSrc,
                 fdTaskCpSrc,
@@ -321,7 +320,6 @@ describe('timer', function() {
                 //console.log('change', msg)
             })
             ev.on('end', () => {
-                //console.log('run end')
                 pm.resolve()
             })
 
@@ -357,9 +355,9 @@ describe('timer', function() {
                     return !lock
                 })
 
+                w.fsDeleteFolder(fdResult)
                 w.fsDeleteFolder(fdDwAttime)
                 w.fsDeleteFolder(fdDwCurrent)
-                w.fsDeleteFolder(fdResult)
                 w.fsDeleteFolder(fdTagRemove)
                 w.fsDeleteFolder(fdTaskCpActualSrc)
                 w.fsDeleteFolder(fdTaskCpSrc)
