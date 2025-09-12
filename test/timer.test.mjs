@@ -17,6 +17,10 @@ describe('timer', function() {
         let fdResult = `./_timer_result`
         w.fsCleanFolder(fdResult)
 
+        //fdTagRemove
+        let fdTagRemove = `./_timer_tagRemove`
+        w.fsCleanFolder(fdTagRemove)
+
         //fdDwAttime
         let fdDwAttime = `./_timer_dwAttime`
         w.fsCleanFolder(fdDwAttime)
@@ -24,10 +28,6 @@ describe('timer', function() {
         //fdDwCurrent
         let fdDwCurrent = `./_timer_dwCurrent`
         w.fsCleanFolder(fdDwCurrent)
-
-        //fdTagRemove
-        let fdTagRemove = `./_timer_tagRemove`
-        w.fsCleanFolder(fdTagRemove)
 
         //fdTaskCpActualSrc
         let fdTaskCpActualSrc = `./_timer_taskCpActualSrc`
@@ -286,9 +286,9 @@ describe('timer', function() {
             }
 
             let opt = {
+                fdTagRemove,
                 fdDwAttime,
                 fdDwCurrent,
-                fdTagRemove,
                 fdTaskCpActualSrc,
                 fdTaskCpSrc,
                 funDownload,
@@ -355,10 +355,10 @@ describe('timer', function() {
                     return !lock
                 })
 
+                w.fsDeleteFolder(fdTagRemove)
                 w.fsDeleteFolder(fdResult)
                 w.fsDeleteFolder(fdDwAttime)
                 w.fsDeleteFolder(fdDwCurrent)
-                w.fsDeleteFolder(fdTagRemove)
                 w.fsDeleteFolder(fdTaskCpActualSrc)
                 w.fsDeleteFolder(fdTaskCpSrc)
 

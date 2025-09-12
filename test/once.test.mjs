@@ -17,6 +17,10 @@ describe('once', function() {
         let fdResult = `./_once_result`
         w.fsCleanFolder(fdResult)
 
+        //fdTagRemove
+        let fdTagRemove = `./_once_tagRemove`
+        w.fsCleanFolder(fdTagRemove)
+
         //fdDwAttime
         let fdDwAttime = `./_once_dwAttime`
         w.fsCleanFolder(fdDwAttime)
@@ -24,10 +28,6 @@ describe('once', function() {
         //fdDwCurrent
         let fdDwCurrent = `./_once_dwCurrent`
         w.fsCleanFolder(fdDwCurrent)
-
-        //fdTagRemove
-        let fdTagRemove = `./_once_tagRemove`
-        w.fsCleanFolder(fdTagRemove)
 
         //fdTaskCpActualSrc
         let fdTaskCpActualSrc = `./_once_taskCpActualSrc`
@@ -132,9 +132,9 @@ describe('once', function() {
         }
 
         let opt = {
+            fdTagRemove,
             fdDwAttime,
             fdDwCurrent,
-            fdTagRemove,
             fdTaskCpActualSrc,
             fdTaskCpSrc,
             funDownload,
@@ -156,35 +156,17 @@ describe('once', function() {
             ms.push(msg)
         })
         ev.on('end', () => {
+
+            w.fsDeleteFolder(fdTagRemove)
             w.fsDeleteFolder(fdResult)
             w.fsDeleteFolder(fdDwAttime)
             w.fsDeleteFolder(fdDwCurrent)
-            w.fsDeleteFolder(fdTagRemove)
             w.fsDeleteFolder(fdTaskCpActualSrc)
             w.fsDeleteFolder(fdTaskCpSrc)
+
             // console.log('ms', ms)
             pm.resolve(ms)
         })
-        // change { event: 'start', msg: 'running...' }
-        // change { event: 'proc-callfun-afterStart', msg: 'start...' }
-        // change { event: 'proc-callfun-afterStart', msg: 'done' }
-        // change { event: 'proc-callfun-download', msg: 'start...' }
-        // change { event: 'proc-callfun-download', num: 2, msg: 'done' }
-        // change { event: 'proc-callfun-getCurrent', msg: 'start...' }
-        // change { event: 'proc-callfun-getCurrent', num: 0, msg: 'done' }
-        // change { event: 'compare', msg: 'start...' }
-        // change { event: 'compare', numRemove: 0, numAdd: 2, numModify: 0, numSame: 0, msg: 'done' }
-        // change { event: 'proc-add-callfun-add', id: '114116', msg: 'start...' }
-        // change { event: 'proc-add-callfun-add', id: '114116', msg: 'done' }
-        // change { event: 'proc-add-callfun-add', id: '114115', msg: 'start...' }
-        // change { event: 'proc-add-callfun-add', id: '114115', msg: 'done' }
-        // change {
-        //   event: 'end',
-        //   timeRunStart: '2025-08-23T15:47:24+08:00',
-        //   timeRunEnd: '2025-08-23T15:47:24+08:00',
-        //   timeRunSpent: '0s',
-        //   msg: 'done'
-        // }
 
         return pm
     }

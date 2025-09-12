@@ -8,6 +8,10 @@ import WDwdataBuilder from './src/WDwdataBuilder.mjs'
 let fdResult = `./_result`
 w.fsCleanFolder(fdResult)
 
+//fdTagRemove
+let fdTagRemove = `./_tagRemove`
+w.fsCleanFolder(fdTagRemove)
+
 //fdDwAttime
 let fdDwAttime = `./_dwAttime`
 w.fsCleanFolder(fdDwAttime)
@@ -15,10 +19,6 @@ w.fsCleanFolder(fdDwAttime)
 //fdDwCurrent
 let fdDwCurrent = `./_dwCurrent`
 w.fsCleanFolder(fdDwCurrent)
-
-//fdTagRemove
-let fdTagRemove = `./_tagRemove`
-w.fsCleanFolder(fdTagRemove)
 
 //fdTaskCpActualSrc
 let fdTaskCpActualSrc = `./_taskCpActualSrc`
@@ -277,9 +277,9 @@ let run = async() => {
     }
 
     let opt = {
+        fdTagRemove,
         fdDwAttime,
         fdDwCurrent,
-        fdTagRemove,
         fdTaskCpActualSrc,
         fdTaskCpSrc,
         funDownload,

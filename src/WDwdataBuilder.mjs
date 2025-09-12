@@ -18,6 +18,7 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  *
  * @param {Object} [opt={}] 輸入設定物件，預設{}
  * @param {String} [opt.keyId='keyId'] 輸入各筆數據之主鍵字串，預設'keyId'
+ * @param {String} [opt.fdTagRemove='./_tagRemove'] 輸入暫存標記為刪除數據資料夾字串，預設'./_tagRemove'
  * @param {String} [opt.fdDwAttime='./_dwAttime'] 輸入當前下載數據資料夾字串，預設'./_dwAttime'
  * @param {String} [opt.fdDwCurrent='./_dwCurrent'] 輸入已下載數據資料夾字串，預設'./_dwCurrent'
  * @param {String} [opt.fdTaskCpActualSrc=`./_taskCpActualSrc`] 輸入任務狀態之來源端完整資料夾字串，預設`./_taskCpActualSrc`
@@ -43,6 +44,10 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  * let fdResult = `./_result`
  * w.fsCleanFolder(fdResult)
  *
+ * //fdTagRemove
+ * let fdTagRemove = `./_tagRemove`
+ * w.fsCleanFolder(fdTagRemove)
+ *
  * //fdDwAttime
  * let fdDwAttime = `./_dwAttime`
  * w.fsCleanFolder(fdDwAttime)
@@ -50,10 +55,6 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  * //fdDwCurrent
  * let fdDwCurrent = `./_dwCurrent`
  * w.fsCleanFolder(fdDwCurrent)
- *
- * //fdTagRemove
- * let fdTagRemove = `./_tagRemove`
- * w.fsCleanFolder(fdTagRemove)
  *
  * //fdTaskCpActualSrc
  * let fdTaskCpActualSrc = `./_taskCpActualSrc`
@@ -158,9 +159,9 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  * }
  *
  * let opt = {
+ *     fdTagRemove,
  *     fdDwAttime,
  *     fdDwCurrent,
- *     fdTagRemove,
  *     fdTaskCpActualSrc,
  *     fdTaskCpSrc,
  *     funDownload,
@@ -206,6 +207,12 @@ let WDwdataBuilder = async(opt = {}) => {
         keyId = `id`
     }
 
+    //fdTagRemove, 暫存標記為刪除數據資料夾
+    let fdTagRemove = get(opt, 'fdTagRemove')
+    if (!isestr(fdTagRemove)) {
+        fdTagRemove = `./_tagRemove`
+    }
+
     //fdDwAttime
     let fdDwAttime = get(opt, 'fdDwAttime')
     if (!isestr(fdDwAttime)) {
@@ -224,13 +231,7 @@ let WDwdataBuilder = async(opt = {}) => {
         fsCreateFolder(fdDwCurrent)
     }
 
-    //fdTagRemove
-    let fdTagRemove = get(opt, 'fdTagRemove')
-    if (!isestr(fdTagRemove)) {
-        fdTagRemove = `./_tagRemove`
-    }
-
-    //fdTaskCpActualSrc
+    //fdTaskCpActualSrc, 儲存完整任務狀態資料夾
     let fdTaskCpActualSrc = get(opt, 'fdTaskCpActualSrc')
     if (!isestr(fdTaskCpActualSrc)) {
         fdTaskCpActualSrc = `./_taskCpActualSrc`
