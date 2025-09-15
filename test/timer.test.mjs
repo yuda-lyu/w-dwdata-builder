@@ -320,6 +320,7 @@ describe('timer', function() {
                 //console.log('change', msg)
             })
             ev.on('end', () => {
+                // console.log('run end')
                 pm.resolve()
             })
 
@@ -429,7 +430,7 @@ describe('timer', function() {
             stage: '4.remove',
             event: 'proc-remove-callfun-remove',
             id: '114116',
-            msg: 'tag'
+            msg: 'add-tag'
         },
         {
             stage: '4.remove',
@@ -450,6 +451,12 @@ describe('timer', function() {
             id: '114116',
             msg: 'release-tag'
         },
+        {
+            stage: '5.add',
+            event: 'proc-add-callfun-add',
+            id: '114116',
+            msg: 'done'
+        },
         { stage: '5.add', event: 'proc-callfun-beforeEnd', msg: 'start...' },
         { stage: '5.add', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '5.add', event: 'end', msg: 'done' },
@@ -463,7 +470,7 @@ describe('timer', function() {
             stage: '6.remove',
             event: 'proc-remove-callfun-remove',
             id: '114116',
-            msg: 'tag'
+            msg: 'add-tag'
         },
         {
             stage: '6.remove',
