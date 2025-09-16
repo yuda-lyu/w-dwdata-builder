@@ -309,10 +309,11 @@ describe('timer', function() {
                 delete msg.timeRunSpent
                 if (w.arrHas(msg.event, [
                     'start',
-                    'proc-callfun-afterStart',
                     'proc-callfun-download',
                     'proc-callfun-getCurrent',
-                    'compare',
+                    'proc-compare',
+                    'proc-callfun-afterStart',
+                    'proc-callfun-beforeEnd',
                 ])) {
                     return
                 }
@@ -383,8 +384,6 @@ describe('timer', function() {
             id: '114115',
             msg: 'done'
         },
-        { stage: '1.ini', event: 'proc-callfun-beforeEnd', msg: 'start...' },
-        { stage: '1.ini', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '1.ini', event: 'end', msg: 'done' },
         {
             stage: '2.add',
@@ -398,8 +397,6 @@ describe('timer', function() {
             id: '114116',
             msg: 'done'
         },
-        { stage: '2.add', event: 'proc-callfun-beforeEnd', msg: 'start...' },
-        { stage: '2.add', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '2.add', event: 'end', msg: 'done' },
         {
             stage: '3.modify',
@@ -413,12 +410,6 @@ describe('timer', function() {
             id: '114116',
             msg: 'done'
         },
-        {
-            stage: '3.modify',
-            event: 'proc-callfun-beforeEnd',
-            msg: 'start...'
-        },
-        { stage: '3.modify', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '3.modify', event: 'end', msg: 'done' },
         {
             stage: '4.remove',
@@ -432,12 +423,6 @@ describe('timer', function() {
             id: '114116',
             msg: 'add-tag'
         },
-        {
-            stage: '4.remove',
-            event: 'proc-callfun-beforeEnd',
-            msg: 'start...'
-        },
-        { stage: '4.remove', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '4.remove', event: 'end', msg: 'done' },
         {
             stage: '5.add',
@@ -457,8 +442,6 @@ describe('timer', function() {
             id: '114116',
             msg: 'done'
         },
-        { stage: '5.add', event: 'proc-callfun-beforeEnd', msg: 'start...' },
-        { stage: '5.add', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '5.add', event: 'end', msg: 'done' },
         {
             stage: '6.remove',
@@ -472,15 +455,19 @@ describe('timer', function() {
             id: '114116',
             msg: 'add-tag'
         },
+        { stage: '6.remove', event: 'end', msg: 'done' },
         {
             stage: '6.remove',
-            event: 'proc-callfun-beforeEnd',
-            msg: 'start...'
+            event: 'cancel-stage-main',
+            msg: 'no difference'
         },
-        { stage: '6.remove', event: 'proc-callfun-beforeEnd', msg: 'done' },
         { stage: '6.remove', event: 'end', msg: 'done' },
-        { stage: '6.remove', event: 'cancel', msg: 'no difference' },
-        { stage: '6.remove', event: 'cancel', msg: 'no difference' },
+        {
+            stage: '6.remove',
+            event: 'cancel-stage-main',
+            msg: 'no difference'
+        },
+        { stage: '6.remove', event: 'end', msg: 'done' },
         {
             stage: '7.eff-add',
             event: 'proc-retake-remove',
@@ -507,14 +494,13 @@ describe('timer', function() {
             id: '114116',
             msg: 'done'
         },
+        { stage: '7.eff-add', event: 'end', msg: 'done' },
         {
             stage: '7.eff-add',
-            event: 'proc-callfun-beforeEnd',
-            msg: 'start...'
+            event: 'cancel-stage-main',
+            msg: 'no difference'
         },
-        { stage: '7.eff-add', event: 'proc-callfun-beforeEnd', msg: 'done' },
-        { stage: '7.eff-add', event: 'end', msg: 'done' },
-        { stage: '7.eff-add', event: 'cancel', msg: 'no difference' }
+        { stage: '7.eff-add', event: 'end', msg: 'done' }
     ]
 
     it('test in localhost', async () => {
