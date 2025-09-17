@@ -5,9 +5,8 @@ import isfun from 'wsemi/src/isfun.mjs'
 import ispm from 'wsemi/src/ispm.mjs'
 import cdbl from 'wsemi/src/cdbl.mjs'
 import fsIsFolder from 'wsemi/src/fsIsFolder.mjs'
-import fsCleanFolder from 'wsemi/src/fsCleanFolder.mjs'
 import fsCreateFolder from 'wsemi/src/fsCreateFolder.mjs'
-import fsCopyFolder from 'wsemi/src/fsCopyFolder.mjs'
+import fsSyncFolder from 'wsemi/src/fsSyncFolder.mjs'
 import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
 
 
@@ -312,16 +311,8 @@ let WDwdataBuilder = async(opt = {}) => {
     let funBeforeEndNec = async() => {
         //成功處理完畢, 將fdDwAttime儲存至fdDwCurrent
 
-        //fsCleanFolder
-        fsCleanFolder(fdDwCurrent)
-
-        //fsCopyFolder
-        let r = fsCopyFolder(fdDwAttime, fdDwCurrent)
-
-        //check
-        if (r.error) {
-            throw new Error(r.error)
-        }
+        //fsSyncFolder
+        await fsSyncFolder(fdDwAttime, fdDwCurrent)
 
     }
 
