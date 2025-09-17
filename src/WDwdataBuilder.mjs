@@ -309,9 +309,8 @@ let WDwdataBuilder = async(opt = {}) => {
 
     //funBeforeEndNec
     let funBeforeEndNec = async() => {
-        //成功處理完畢, 將fdDwAttime儲存至fdDwCurrent
 
-        //fsSyncFolder
+        //fsSyncFolder, 將fdDwAttime完全同步至fdDwCurrent
         await fsSyncFolder(fdDwAttime, fdDwCurrent)
 
     }
