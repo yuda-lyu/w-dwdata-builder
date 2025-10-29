@@ -12,6 +12,7 @@ A builder for download data.
 To view documentation or get support, visit [docs](https://yuda-lyu.github.io/w-dwdata-builder/global.html).
 
 ## Installation
+
 ### Using npm(ES6 module):
 ```alias
 npm i w-dwdata-builder
