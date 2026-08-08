@@ -158,19 +158,42 @@ describe('srLog', function() {
 
         //funRemove
         let funRemove = async(v) => {
-            //do somethings
+
+            let fd = `${fdResult}/${v.id}`
+
+            if (w.fsIsFolder(fd)) {
+                w.fsDeleteFolder(fd)
+            }
+
         }
 
         //funAdd
         let funAdd = async(v) => {
+
+            let fd = `${fdResult}/${v.id}`
+
+            if (w.fsIsFolder(fd)) {
+                w.fsCleanFolder(fd)
+            }
+
+            //do somethings, 模擬處理時拋錯
             if (errFunAdd) {
                 throw new Error(msgErrFunAdd)
             }
+
         }
 
         //funModify
         let funModify = async(v) => {
+
+            let fd = `${fdResult}/${v.id}`
+
+            if (w.fsIsFolder(fd)) {
+                w.fsCleanFolder(fd)
+            }
+
             //do somethings
+
         }
 
         //srLog
