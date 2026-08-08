@@ -10,6 +10,9 @@ describe('srLog', function() {
     //msgErrFunAdd, funAdd拋出之錯誤訊息
     let msgErrFunAdd = 'mock error from funAdd'
 
+    //msgErrFunDownload, funDownload拋出之錯誤訊息
+    let msgErrFunDownload = 'mock error from funDownload'
+
     //itemsDownload, 下載數據
     let itemsDownload = [
         {
@@ -58,6 +61,12 @@ describe('srLog', function() {
         //errFunAdd, funAdd是否拋錯
         let errFunAdd = _.get(opt, 'errFunAdd', false)
 
+        //errFunDownload, funDownload是否拋錯
+        let errFunDownload = _.get(opt, 'errFunDownload', false)
+
+        //useShowLog, 未給予時不傳入optDB, 用以驗證預設值
+        let useShowLog = _.get(opt, 'useShowLog', null)
+
         //tag, 各測試使用獨立資料夾
         let tag = _.get(opt, 'tag', 'c0')
 
@@ -71,6 +80,13 @@ describe('srLog', function() {
 
         //nArgs, 各次呼叫srLog函數所接收之參數數量
         let nArgs = []
+
+        //msConsole, 攔截console.log之輸出
+        let msConsole = []
+        let consoleLogOri = console.log
+        console.log = (...args) => {
+            msConsole.push(args)
+        }
 
         //fdResult, 額外創建供另產結果之用
         let fdResult = `./_srLog_${tag}_result`
@@ -101,6 +117,10 @@ describe('srLog', function() {
 
         //funDownload
         let funDownload = async() => {
+
+            if (errFunDownload) {
+                throw new Error(msgErrFunDownload)
+            }
 
             //items
             let items = itemsDownload
@@ -186,6 +206,9 @@ describe('srLog', function() {
             funAdd,
             funModify,
         }
+        if (_.isBoolean(useShowLog)) {
+            optDB.useShowLog = useShowLog
+        }
         let ev = await WDwdataBuilder(optDB)
             .catch((err) => {
                 console.log(err)
@@ -202,7 +225,9 @@ describe('srLog', function() {
             w.fsDeleteFolder(fdTaskCpActualSrc)
             w.fsDeleteFolder(fdTaskCpSrc)
 
-            pm.resolve({ msChange, msInfo, msWarn, msError, nArgs })
+            console.log = consoleLogOri
+
+            pm.resolve({ msChange, msInfo, msWarn, msError, nArgs, msConsole })
         })
 
         return pm
@@ -325,6 +350,55 @@ describe('srLog', function() {
     it('test srLog: 未提供srLog時, change事件仍完整發送', async () => {
         let r = await test({ tag: 'c8', errFunAdd: true, useSrLog: false })
         let rr = msChangeError
+        assert.strict.deepEqual(r.msChange.map(rmTime), rr)
+    })
+
+    //cntConsole, 統計console.log所收到之輸出類別
+    let cntConsole = (ms) => {
+        let numErr = _.size(ms.filter((v) => {
+            return _.get(v, [0]) instanceof Error
+        }))
+        let numCancel = _.size(ms.filter((v) => {
+            return _.get(v, [0]) === 'error occurred, task canceled'
+        }))
+        return { numErr, numCancel, numAll: _.size(ms) }
+    }
+
+    it('test srLog: useShowLog預設為true時, 錯誤與取消訊息輸出至console', async () => {
+        let r = await test({ tag: 'c9', errFunAdd: true })
+        let rr = { numErr: 1, numCancel: 2, numAll: 3 } //funAdd之catch輸出1次錯誤, 主階段與結束前階段各輸出1次取消訊息
+        assert.strict.deepEqual(cntConsole(r.msConsole), rr)
+    })
+
+    it('test srLog: useShowLog為false時, 不輸出至console', async () => {
+        let r = await test({ tag: 'c10', errFunAdd: true, useShowLog: false })
+        let rr = { numErr: 0, numCancel: 0, numAll: 0 }
+        assert.strict.deepEqual(cntConsole(r.msConsole), rr)
+    })
+
+    it('test srLog: useShowLog為false時, srLog紀錄不受影響', async () => {
+        let r = await test({ tag: 'c11', errFunAdd: true, useShowLog: false })
+        assert.strict.deepEqual(r.msInfo.map(rmTime), pickByType(msChangeError, 'info'))
+        assert.strict.deepEqual(r.msError, pickByType(msChangeError, 'error'))
+    })
+
+    //msChangeErrDownload, funDownload拋錯時各階段所發送之紀錄, 因下載階段事件名固定為proc-callfun-download, 故取消訊息亦須為error at proc-callfun-download
+    let msChangeErrDownload = [
+        { type: 'info', event: 'start', msg: 'running...' },
+        { type: 'info', event: 'proc-callfun-afterStart', msg: 'start...' },
+        { type: 'info', event: 'proc-callfun-afterStart', msg: 'done' },
+        { type: 'info', event: 'proc-callfun-download', msg: 'start...' },
+        { type: 'error', event: 'proc-callfun-download', msg: msgErrFunDownload },
+        { type: 'info', event: 'cancel-stage-main', msg: 'error at proc-callfun-download' },
+        { type: 'info', event: 'proc-callfun-beforeEnd', msg: 'start...' },
+        { type: 'info', event: 'proc-callfun-beforeEnd', msg: 'done' },
+        { type: 'info', event: 'cancel-stage-beforeEnd', msg: 'error at proc-callfun-download' },
+        { type: 'info', event: 'end', msg: 'done' },
+    ]
+
+    it('test srLog: funDownload拋錯時, 取消訊息使用下載階段事件名', async () => {
+        let r = await test({ tag: 'c12', errFunDownload: true })
+        let rr = msChangeErrDownload
         assert.strict.deepEqual(r.msChange.map(rmTime), rr)
     })
 
