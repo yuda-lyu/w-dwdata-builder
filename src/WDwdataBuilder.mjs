@@ -22,7 +22,7 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  * @param {String} [opt.fdDwCurrent='./_dwCurrent'] 輸入儲存前次數據資料夾字串，預設'./_dwCurrent'
  * @param {String} [opt.fdTaskCpActualSrc=`./_taskCpActualSrc`] 輸入任務狀態之來源端完整資料夾字串，預設`./_taskCpActualSrc`
  * @param {String} [opt.fdTaskCpSrc=`./_taskCpSrc`] 輸入任務狀態之來源端資料夾字串，預設`./_taskCpSrc`
- * @param {String} [opt.fdLog='./_logs'] 輸入儲存log資料夾字串，預設'./_logs'
+ * @param {Object} [opt.srLog=null] 輸入事件紀錄物件，需提供函數info、warn與error，各接收一紀錄物件，供偵測數據變更時紀錄各階段事件，未提供時不進行紀錄，預設null
  * @param {Function} [opt.funDownload=null] 輸入取得下載數據之函數，回傳資料陣列，預設null
  * @param {Function} [opt.funGetCurrent=null] 輸入取得前次數據之函數，回傳資料陣列，預設null
  * @param {Function} [opt.funAdd=null] 輸入當有新資料時，需要連動處理之函數，預設null
@@ -31,7 +31,7 @@ import WDataScheduler from 'w-data-scheduler/src/WDataScheduler.mjs'
  * @param {Function} [opt.funAfterStart=null] 輸入偵測程序剛開始啟動時，需要處理之函數，預設null
  * @param {Function} [opt.funBeforeEnd=null] 輸入偵測程序要結束前，需要處理之函數，預設null
  * @param {Number} [opt.timeToleranceRemove=0] 輸入刪除任務之防抖時長，單位ms，預設0，代表不使用
- * @returns {Object} 回傳事件物件，可呼叫函數on監聽change事件，可呼叫函數srlog額外進行事件紀錄
+ * @returns {Object} 回傳事件物件，可呼叫函數on監聽change與end事件
  * @example
  *
  * import fs from 'fs'
@@ -255,14 +255,8 @@ let WDwdataBuilder = async(opt = {}) => {
         fsCreateFolder(fdTaskCpSrc)
     }
 
-    //fdLog
-    let fdLog = get(opt, 'fdLog')
-    if (!isestr(fdLog)) {
-        fdLog = './_logs'
-    }
-    if (!fsIsFolder(fdLog)) {
-        fsCreateFolder(fdLog)
-    }
+    //srLog
+    let srLog = get(opt, 'srLog', null)
 
     //funDownload
     let funDownload = get(opt, 'funDownload')
@@ -346,7 +340,7 @@ let WDwdataBuilder = async(opt = {}) => {
         fdTagRemove,
         fdTaskCpActualSrc,
         fdTaskCpSrc,
-        fdLog,
+        srLog,
         funGetNew: funDownload,
         funGetCurrent,
         funAdd,
