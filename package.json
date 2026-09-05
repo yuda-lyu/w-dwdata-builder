@@ -1,10 +1,10 @@
 {
   "name": "w-dwdata-builder",
-  "version": "1.0.50",
+  "version": "1.0.51",
   "main": "dist/w-dwdata-builder.umd.js",
   "dependencies": {
-    "w-data-scheduler": "^1.0.28",
-    "wsemi": "^1.8.84"
+    "w-data-scheduler": "^1.0.29",
+    "wsemi": "^1.8.85"
   },
   "devDependencies": {
     "w-package-tools": "^1.1.15"
