@@ -1,16 +1,16 @@
 {
   "name": "w-dwdata-builder",
-  "version": "1.0.51",
+  "version": "1.0.52",
   "main": "dist/w-dwdata-builder.umd.js",
   "dependencies": {
-    "w-data-scheduler": "^1.0.29",
-    "wsemi": "^1.8.85"
+    "w-data-scheduler": "^1.0.30",
+    "wsemi": "^1.8.92"
   },
   "devDependencies": {
-    "w-package-tools": "^1.1.15"
+    "w-package-tools": "^1.1.16"
   },
   "scripts": {
-    "test": "mocha --parallel --timeout 60000",
+    "test": "mocha --parallel \"test/*.test.mjs\" --timeout 180000",
     "deploy": "gh-pages -d docs"
   },
   "repository": {
