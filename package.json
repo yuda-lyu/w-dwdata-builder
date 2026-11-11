@@ -1,13 +1,13 @@
 {
   "name": "w-dwdata-builder",
-  "version": "1.1.19",
+  "version": "1.1.20",
   "main": "dist/w-dwdata-builder.umd.js",
   "dependencies": {
-    "w-data-scheduler": "^1.0.50",
-    "wsemi": "^1.9.56"
+    "w-data-scheduler": "^1.0.51",
+    "wsemi": "^1.9.57"
   },
   "devDependencies": {
-    "w-package-tools": "^1.1.26"
+    "w-package-tools": "^1.1.27"
   },
   "scripts": {
     "test": "mocha --parallel \"test/*.test.mjs\" --timeout 180000",
