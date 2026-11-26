@@ -231,7 +231,7 @@ describe('timer', function() {
             let funGetCurrent = async() => {
 
                 //vfps
-                let vfps = w.fsTreeFolder(fdDwCurrent, 1)
+                let vfps = w.fsTreeFolder(fdDwCurrent, { levelLimit: 1 })
                 // console.log('vfps', vfps)
 
                 //items
