@@ -282,7 +282,15 @@ describe('srLog', function() {
         { type: 'info', event: 'end', msg: 'done' },
     ]
 
-    //msChangeError, funAdd拋錯時各階段所發送之紀錄, 因beforeEnd階段不論有無錯誤皆執行, 故仍有proc-callfun-beforeEnd
+    //warnFailItems, funAdd拋錯時逐項處理後之彙總紀錄
+    let warnFailItems = {
+        event: 'fail-items-stage-main',
+        numFail: 1,
+        items: [{ id: '114116', mode: 'add', event: 'proc-add-callfun-add', msg: 'funAdd failed' }],
+        msg: 'some items failed',
+    }
+
+    //msChangeError, funAdd拋錯時各階段所發送之紀錄, 單項失敗不取消本輪, 逐項處理後發出彙總warn, 其後結束前階段照常執行
     let msChangeError = [
         { type: 'info', event: 'start', msg: 'running...' },
         { type: 'info', event: 'proc-callfun-afterStart', msg: 'start...' },
@@ -303,10 +311,9 @@ describe('srLog', function() {
         },
         { type: 'info', event: 'proc-add-callfun-add', id: '114116', msg: 'start...' },
         { type: 'error', event: 'proc-add-callfun-add', id: '114116', msg: msgErrFunAdd },
-        { type: 'info', event: 'cancel-stage-main', msg: 'error at proc-add-callfun-add' },
+        { type: 'warn', ...warnFailItems },
         { type: 'info', event: 'proc-callfun-beforeEnd', msg: 'start...' },
         { type: 'info', event: 'proc-callfun-beforeEnd', msg: 'done' },
-        { type: 'info', event: 'cancel-stage-beforeEnd', msg: 'error at proc-add-callfun-add' },
         { type: 'info', event: 'end', msg: 'done' },
     ]
 
@@ -356,10 +363,16 @@ describe('srLog', function() {
         assert.strict.deepEqual(pickByType(r.msChange, 'error'), rr)
     })
 
-    it('test srLog: funAdd拋錯時, 後續取消與結束階段仍紀錄於srLog.info', async () => {
+    it('test srLog: funAdd拋錯時, 不取消本輪, 結束階段仍紀錄於srLog.info', async () => {
         let r = await test({ tag: 'c6', errFunAdd: true })
         let rr = pickByType(msChangeError, 'info')
         assert.strict.deepEqual(r.msInfo.map(rmTime), rr)
+    })
+
+    it('test srLog: funAdd拋錯時, 彙總紀錄於srLog.warn', async () => {
+        let r = await test({ tag: 'c13', errFunAdd: true })
+        assert.strict.deepEqual(r.msWarn, [warnFailItems])
+        assert.strict.deepEqual(pickByType(r.msChange, 'warn'), [warnFailItems])
     })
 
     it('test srLog: 僅提供info時, 未提供之error不影響change事件發送', async () => {
@@ -387,9 +400,9 @@ describe('srLog', function() {
         return { numErr, numCancel, numAll: _.size(ms) }
     }
 
-    it('test srLog: useShowLog預設為true時, 錯誤與取消訊息輸出至console', async () => {
+    it('test srLog: useShowLog預設為true時, 錯誤輸出至console, 單項失敗不輸出取消訊息', async () => {
         let r = await test({ tag: 'c9', errFunAdd: true })
-        let rr = { numErr: 1, numCancel: 2, numAll: 3 } //funAdd之catch輸出1次錯誤, 主階段與結束前階段各輸出1次取消訊息
+        let rr = { numErr: 1, numCancel: 0, numAll: 1 } //funAdd失敗輸出1次錯誤, 本輪不取消
         assert.strict.deepEqual(cntConsole(r.msConsole), rr)
     })
 
@@ -423,6 +436,12 @@ describe('srLog', function() {
         let r = await test({ tag: 'c12', errFunDownload: true })
         let rr = msChangeErrDownload
         assert.strict.deepEqual(r.msChange.map(rmTime), rr)
+    })
+
+    it('test srLog: funDownload拋錯時, 錯誤與取消訊息輸出至console', async () => {
+        let r = await test({ tag: 'c14', errFunDownload: true })
+        let rr = { numErr: 1, numCancel: 2, numAll: 3 } //下載階段之catch輸出1次錯誤, 主階段與結束前階段各輸出1次取消訊息
+        assert.strict.deepEqual(cntConsole(r.msConsole), rr)
     })
 
 })

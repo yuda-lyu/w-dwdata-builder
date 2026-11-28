@@ -191,3 +191,33 @@ ev.on('change', (msg) => {
 // change { event: 'proc-callfun-beforeEnd', msg: 'done' }
 // change { event: 'end', msg: 'done' }
 ```
+
+## Breaking changes
+
+### Only successfully processed items go into `fdDwCurrent`
+Applies to the release after 1.1.45. It needs `w-data-scheduler` 1.0.77 or later, where one failing item no longer cancels the round.
+
+Before `funBeforeEnd` is called, `fdDwCurrent` is updated from the result of the round.
+
+- **Before**: `fdDwCurrent` was always made an exact copy of `fdDwAttime`, no matter whether items had failed or the round had been canceled. When `funGetCurrent` reads `fdDwCurrent`, a failed item was therefore never retried.
+- **After**:
+    - The round was canceled (`msgCancel` is not empty: an error of `funAfterStart`, `funDownload`, `funGetCurrent` or of the comparison, `no data`, `no difference`): `fdDwCurrent` is not changed.
+    - Every item found by the comparison succeeded: `fdDwCurrent` is made an exact copy of `fdDwAttime` (as before).
+    - Some items failed or were not processed: only the successful items are applied. An added or changed item copies `fdDwAttime/<id>.json` to `fdDwCurrent`, a removed item deletes `fdDwCurrent/<id>.json`, and all other files keep their previous content. So a failed addition does not appear, a failed change keeps the old version, a failed removal is not removed, and they are compared and processed again in the next round.
+- **New**: `funBeforeEnd` receives the result of the round, and the `end` listeners receive the same content. A failed item is also reported by the `error` event of its stage and by the `warn` event `fail-items-stage-main`.
+
+```alias
+{
+    success: { add: [], modify: [], remove: [] }, //ids (values of keyId) processed successfully
+    failed: [ //failed items
+        { id: '114116', mode: 'add', event: 'proc-add-callfun-add', msg: 'funAdd failed' },
+    ],
+    msgCancel: '', //why no item was processed in this round (e.g. 'no data', 'no difference'), otherwise ''
+}
+```
+
+- **Migration**:
+    - Store the data of each item as its own file `<id>.json` (`<id>` is the value of `keyId`) at the first level of `fdDwAttime`, containing only that item, as in the example above. In a round with failed or unprocessed items, a successful item without such a file (or whose id contains a path separator) is not applied; the `warn` event `move-data-to-current` reports how many (`num`), and the next round compares them again. With other layouts, such as all items in one file, `fdDwCurrent` is only updated in a round where every item succeeded.
+    - `funAdd`, `funModify` and `funRemove` must be safe to call again.
+    - Do not expect `fdDwCurrent` to equal `fdDwAttime` after every round, and treat an item as done only when it is in `success`.
+    - If a file cannot be copied or deleted while applying the successful items, the other items are still applied, then an `error` event of `proc-callfun-beforeEnd` is recorded and `funBeforeEnd` is not called.
